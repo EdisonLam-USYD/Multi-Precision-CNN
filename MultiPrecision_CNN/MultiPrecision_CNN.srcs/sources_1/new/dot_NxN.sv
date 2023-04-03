@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: 
+// Engineer: Edison Lam
 // 
 // Create Date: 26.03.2023 16:32:27
 // Design Name: 
-// Module Name: test_conv3x3
+// Module Name: dot_NxN
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -68,5 +68,12 @@ module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4, SumDepth = 32)
         end
         
     endgenerate 
+    
+    always_comb begin
+        sum = 'b0;
+        for (int i = 0; i < BitSize*(N*N); i = i + 1) begin
+            sum = sum + o_data[i];
+        end
+    end
 
 endmodule

@@ -21,8 +21,7 @@
 
 // does not work for N = 1
 // can probably be upgraded by hardcoding the interactions for 3x3 inputs and so on (result found in 1 cycle)
-// can also do things combinationally to do things in 1 cycle (for varying size)
-//     rather than 1 cycle per item in input
+// can probably be sped up by comparing more simultaneously
 // max_pooling #(.N(), .BitSize()) test_max_pooling (.i_data(), .o_max());
 module max_pooling #(N = 3, BitSize = 8) (
     input signed [BitSize*(N*N)-1:0] i_data,
@@ -49,22 +48,5 @@ module max_pooling #(N = 3, BitSize = 8) (
                 o_max = ($unsigned(o_max) < $unsigned(i_data_layers[i])) ? i_data_layers[i] :  o_max;
         end
     end
-    
-//    always_ff @(posedge clk) begin
-//        if (reset) begin
-//            current_max <= $signed(i_data[0]);
-//            counter <= 1;
-//            done <= 0;
-//        end
-//        else if (counter == N*N) begin 
-//            if (current_max < $signed(i_data[counter])) current_max <=i_data[counter];
-//            done <= 1;
-//        end
-//        else begin
-//            if (current_max < $signed(i_data[counter])) current_max <= i_data[counter];
-//            counter <= counter + 1;
-            
-//        end            
-//    end
     
 endmodule

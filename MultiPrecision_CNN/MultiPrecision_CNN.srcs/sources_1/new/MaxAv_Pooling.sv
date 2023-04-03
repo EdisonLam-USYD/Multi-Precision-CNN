@@ -22,12 +22,11 @@
 `define MAX 1
 `define AVG 0
 
+// MaxAv_Pooling #(.Mode(), .N(), .BitSize()) ma_pooling (.i_data(), .signed_check(), .o_data());
 module MaxAv_Pooling #(MODE = `MAX, N = 3, BitSize = 8) (
-    input clk,
-    input reset,
     input [N*N-1:0][BitSize-1:0] i_data,
-    output logic [BitSize-1:0] o_data,
-    output logic done
+    input signed_check,
+    output logic [BitSize-1:0] o_data
     );
     
     
@@ -36,7 +35,7 @@ module MaxAv_Pooling #(MODE = `MAX, N = 3, BitSize = 8) (
         if (MODE == `MAX) begin
             // TODO
 //            if (N == 1) o_data = i_data[0];
-            max_pooling #(.N(), .BitSize()) test_max_pooling (.clk(), .reset(), .i_data(), .o_max());
+            max_pooling #(.N(N), .BitSize(BitSize)) test_max_pooling (.i_data(i_data), .signed_check(signed_check), .o_max(o_data));
         end
         // assuming mode = 0, average pooling is enabled
         else if (MODE == `AVG) begin
