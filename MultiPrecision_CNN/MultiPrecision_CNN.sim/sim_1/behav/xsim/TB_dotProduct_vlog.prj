@@ -1,0 +1,13 @@
+# compile verilog/system verilog design source files
+sv xil_defaultlib  \
+"../../../../MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv" \
+"../../../../MultiPrecision_CNN.srcs/sources_1/new/max_pooling.sv" \
+"../../../../MultiPrecision_CNN.srcs/sources_1/new/multiply_1Bit.sv" \
+"../../../../MultiPrecision_CNN.srcs/sources_1/new/multiply_2Bit.sv" \
+"../../../../MultiPrecision_CNN.srcs/sim_1/new/TB_dotProduct.sv" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

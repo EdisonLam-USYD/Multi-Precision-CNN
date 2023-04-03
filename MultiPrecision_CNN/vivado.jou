@@ -1,0 +1,125 @@
+#-----------------------------------------------------------
+# Vivado v2022.2 (64-bit)
+# SW Build 3671981 on Fri Oct 14 05:00:03 MDT 2022
+# IP Build 3669848 on Fri Oct 14 08:30:02 MDT 2022
+# Start of session at: Mon Mar 27 20:08:30 2023
+# Process ID: 23164
+# Current directory: C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent15408 C:\Users\Edison\Documents\Programming\Verilog\MultiPrecision_CNN\MultiPrecision_CNN.xpr
+# Log file: C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/vivado.log
+# Journal file: C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN\vivado.jou
+# Running On: EDGPC, OS: Windows, CPU Frequency: 3793 MHz, CPU Physical cores: 16, Host memory: 34236 MB
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.xpr
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+update_files -from_files C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv -to_files C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/test_conv3x3.sv -filesets [get_filesets *]
+launch_simulation
+# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
+set_property source_mgmt_mode None [current_project]
+set_property top dot_NxN [current_fileset]
+# Re-enabling previously disabled source management mode.
+set_property source_mgmt_mode All [current_project]
+update_compile_order -fileset sources_1
+launch_simulation
+launch_simulation
+launch_simulation
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+launch_simulation
+source TB_dotProduct.tcl
+set_property SOURCE_SET sources_1 [get_filesets sim_1]
+close [ open C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sim_1/new/TB_test.sv w ]
+add_files -fileset sim_1 C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sim_1/new/TB_test.sv
+update_compile_order -fileset sim_1
+# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
+set_property source_mgmt_mode None [current_project]
+set_property top TB_test [get_filesets sim_1]
+set_property top_lib xil_defaultlib [get_filesets sim_1]
+# Re-enabling previously disabled source management mode.
+set_property source_mgmt_mode All [current_project]
+update_compile_order -fileset sim_1
+launch_simulation
+launch_simulation
+launch_simulation
+launch_simulation
+launch_simulation
+launch_simulation
+update_compile_order -fileset sim_1
+update_compile_order -fileset sim_1
+launch_simulation
+# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
+set_property source_mgmt_mode None [current_project]
+set_property top TB_dotProduct [get_filesets sim_1]
+set_property top_lib xil_defaultlib [get_filesets sim_1]
+# Re-enabling previously disabled source management mode.
+set_property source_mgmt_mode All [current_project]
+update_compile_order -fileset sim_1
+add_bp {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} 39
+remove_bps -file {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} -line 39
+add_bp {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} 39
+add_bp {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} 40
+add_bp {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} 41
+remove_bps -file {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} -line 39
+add_bp {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} 39
+remove_bps -file {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} -line 39
+remove_bps -file {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} -line 40
+remove_bps -file {C:/Users/Edison/Documents/Programming/Verilog/MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/dot_NxN.sv} -line 41
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
+launch_simulation
+source TB_dotProduct.tcl
+close_sim
