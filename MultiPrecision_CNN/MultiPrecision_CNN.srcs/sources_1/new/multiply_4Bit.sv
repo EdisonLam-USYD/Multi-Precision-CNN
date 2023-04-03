@@ -27,6 +27,7 @@ module multiply_4Bit #(BitSize = 32, FixedPointPos = 0)
     output logic [BitSize-1:0] o_data
     );
     wire [2*BitSize-1:0] temp_out;
-    assign temp_out = i_data*i_prod;
-//    assign o_data = 
+    assign temp_out = (i_data*i_prod) >>> FixedPointPos;
+    assign o_data = temp_out[BitSize-1:0];
+
 endmodule
