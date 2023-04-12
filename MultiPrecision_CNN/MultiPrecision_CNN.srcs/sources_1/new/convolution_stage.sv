@@ -22,14 +22,14 @@
 
 // note: N is the size of the kernel - might make it during run-time rather than compilation
 // Some features to add after: - stride steps, increased number of data loaded in at once (parameterised)
+// convolution_stage #(.NumberOfConvs(), .N(), .BitSize(), .KernelBitSize(), .ImageWidth()) conv_s (.clk(), .res_n(), .in_valid(), .kernel(), .in_data(), .out_ready(), .out_valid(), .out_data());
 module convolution_stage #(NumberOfConvs = 1, N = 3, BitSize=32, KernelBitSize = 4, ImageWidth = 100)
 		(
     		input 							clk,
-            input                           resest,
+            input                           res_n,
         	input 							in_valid,     // enable
           	input [KernelBitSize*(N*N)-1:0] kernel,
           	input [BitSize-1:0] 			in_data,
-        	input 							reset,
       
       		output logic 						out_ready,
         	output logic 						out_valid,
@@ -78,7 +78,7 @@ module convolution_stage #(NumberOfConvs = 1, N = 3, BitSize=32, KernelBitSize =
   dot_NxN #(.N(N), .BitSize(BitSize), .KernelBitSize(KernelBitSize), .SumDepth(BitSize)) dot_product (.kernel(kernel), .i_data(dot_product_in_c), .o_data(), .sum(out_data));
   
   	always@(posedge clk) begin
-    	if(!resest)
+    	if(!res_n)
       	begin
         image_pos_r <= 0;
       	end
