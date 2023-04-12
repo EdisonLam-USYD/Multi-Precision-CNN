@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 // should be noted that the 4 bits in the kernel represent [-1:1]
+// should fixed point be chosen in run-time or compilation?
 module multiply_4Bit #(BitSize = 32, FixedPointPos = 0)
     (
     input signed [BitSize-1:0]  i_data, // 32bit number

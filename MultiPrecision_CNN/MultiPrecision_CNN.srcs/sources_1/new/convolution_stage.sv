@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 27.03.2023 14:56:36
+// Create Date: 03.04.2023 22:14:21
 // Design Name: 
-// Module Name: avg_pooling
+// Module Name: convolution_stage
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -19,10 +19,9 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
-module avg_pooling #(N = 3, BitSize = 8) (
-    input signed [BitSize*(N*N)-1:0] i_data,
-    input signed_check,
-    output logic [BitSize-1:0] o_max
+// note: N is the size of the kernel - might make it during run-time rather than compilation
+module convolution_stage #(NumberOfConvs = 1, N = 3, BitSize=2, KernelBitSize = 4, SumDepth = 32)
+    (
+        
     );
 endmodule

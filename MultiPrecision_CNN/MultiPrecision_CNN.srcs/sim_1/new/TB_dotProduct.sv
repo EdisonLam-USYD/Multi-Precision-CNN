@@ -64,5 +64,5 @@ module TB_dotProduct;
 //    end
     
     dot_NxN #(.N(`N), .BitSize(`B), .KernelBitSize(`K), .SumDepth(32))     test1 (.kernel(in_kernel), .i_data(in_conv), .o_data(out), .sum()); 
-    max_pooling #(.N(`N), .BitSize(`B))                                     test_max_pooling (.i_data(out), .o_max(max));
+    max_pooling #(.N(`N), .BitSize(`B))                                     test_max_pooling (.i_data(out), .signed_check(1), .o_max(max));
 endmodule

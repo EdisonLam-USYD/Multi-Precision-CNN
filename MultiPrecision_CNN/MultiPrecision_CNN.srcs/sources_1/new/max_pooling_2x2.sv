@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 // different from other one because it assumes it is a 2 x 2 and hard codes the multiplexors
+// taken from a github
 module max_pooling_2x2 #(BitSize = 32)
     (
     input clk,
