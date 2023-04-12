@@ -61,10 +61,22 @@ module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4, SumDepth = 32)
             end 
         end
         else if (KernelBitSize == 4) begin
-            // not implemented yet
+            for (i = 0; i < N*N; i= i + 1) begin : _4BitDotProduct
+                multiply_4Bit #(.BitSize(BitSize), .FixedPointPos()) multi (
+                                            .i_data(i_data_layers[i]),
+                                            .i_prod(kernel_layers[i]),
+                                            .o_data(o_data_layers[i])
+                                            );
+            end 
         end
         else if (KernelBitSize == 8) begin
-            // not implemented yet
+            for (i = 0; i < N*N; i= i + 1) begin : _2BitDotProduct
+                multiply_8Bit #(.BitSize(BitSize), .FixedPointPos()) multi (
+                                            .i_data(i_data_layers[i]),
+                                            .i_prod(kernel_layers[i]),
+                                            .o_data(o_data_layers[i])
+                                            );
+            end 
         end
         
     endgenerate 
