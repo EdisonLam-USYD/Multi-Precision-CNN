@@ -35,9 +35,9 @@ module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4, SumDepth = 32)
     logic [N*N-1:0][BitSize-1:0] i_data_layers;
     logic [N*N-1:0][BitSize-1:0] o_data_layers;
     
-    assign {>>KernelBitSize{kernel_layers}} = {kernel};
-    assign {>>BitSize{i_data_layers}} = {i_data};
-    assign o_data = {>>{o_data_layers}};
+    assign kernel_layers = kernel;
+    assign i_data_layers = i_data;
+    assign o_data_layers = o_data;
     
     genvar i;
     generate 
@@ -80,7 +80,7 @@ module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4, SumDepth = 32)
         end
         
     endgenerate 
-    
+    /* verilator lint_off WIDTH */
     always_comb begin
         sum = 'b0;
         for (int i = 0; i < BitSize*(N*N); i = i + 1) begin

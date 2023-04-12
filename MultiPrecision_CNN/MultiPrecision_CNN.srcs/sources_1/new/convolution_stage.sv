@@ -31,9 +31,9 @@ module convolution_stage #(NumberOfConvs = 1, N = 3, BitSize=32, KernelBitSize =
           	input [BitSize-1:0] 			in_data,
         	input 							reset,
       
-      		output 							out_ready,
-        	output 							out_valid,
-          	output [BitSize-1:0] 			out_data
+      		output logic 						out_ready,
+        	output logic 						out_valid,
+          	output logic [BitSize-1:0] 			out_data
       	     
       	
     );
@@ -44,7 +44,8 @@ module convolution_stage #(NumberOfConvs = 1, N = 3, BitSize=32, KernelBitSize =
   	integer 					image_pos_r;
   	integer						image_pos_c;
   
-  	wire dot_product_in_c[N*N-1:0][BitSize-1:0];
+  	logic [N*N-1:0][BitSize-1:0] dot_product_in_c;
+    
   	integer stream_index;
   
   	
