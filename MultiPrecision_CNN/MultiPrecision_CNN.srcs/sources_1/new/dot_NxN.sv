@@ -21,7 +21,7 @@
 
 // testing for kernel precision of 1 bit
 // dot_NxN #(.N(3), .BitSize(8), .KernelBitSize(1), .SumDepth(32)) test1 (.kernel(), .i_data(), .o_data(), .sum());
-module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4, SumDepth = 32)
+module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4, SumDepth = BitSize)
     (
     input [KernelBitSize*(N*N)-1:0] kernel,
     input signed [BitSize*(N*N)-1:0] i_data,

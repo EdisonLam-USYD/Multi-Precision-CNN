@@ -75,7 +75,7 @@ module convolution_stage #(NumberOfConvs = 1, N = 3, BitSize=32, KernelBitSize =
         end
     end
   
-  dot_NxN #(.N(N), .BitSize(BitSize), .KernelBitSize(KernelBitSize), .SumDepth(BitSize)) dot_product (.kernel(kernel), .i_data(dot_product_in_c), .o_data(), .sum(out_data));
+  dot_NxN #(.N(N), .BitSize(BitSize), .KernelBitSize(KernelBitSize)) dot_product (.kernel(kernel), .i_data(dot_product_in_c), .o_data(), .sum(out_data));
   
   	always@(posedge clk) begin
     	if(!res_n)
