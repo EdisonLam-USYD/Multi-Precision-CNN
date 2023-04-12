@@ -25,7 +25,7 @@
 module convolution_stage #(NumberOfConvs = 1, N = 3, BitSize=32, KernelBitSize = 4, ImageWidth = 100)
 		(
     		input 							clk,
-            input                           resest,
+            input                           res_n,
         	input 							in_valid,     // enable
           	input [KernelBitSize*(N*N)-1:0] kernel,
           	input [BitSize-1:0] 			in_data,
@@ -78,7 +78,7 @@ module convolution_stage #(NumberOfConvs = 1, N = 3, BitSize=32, KernelBitSize =
   dot_NxN #(.N(N), .BitSize(BitSize), .KernelBitSize(KernelBitSize), .SumDepth(BitSize)) dot_product (.kernel(kernel), .i_data(dot_product_in_c), .o_data(), .sum(out_data));
   
   	always@(posedge clk) begin
-    	if(!resest)
+    	if(!res_n)
       	begin
         image_pos_r <= 0;
       	end
