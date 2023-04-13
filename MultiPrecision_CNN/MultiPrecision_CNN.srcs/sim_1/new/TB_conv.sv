@@ -58,7 +58,10 @@ module TB_conv;
     always begin
         #10
         res_n = 1;
-        counter = counter + 1;
+        if (out_ready) 
+        begin
+            counter = counter + 1;
+        end
         in_valid = 1;
         clk = 1;
         #10
