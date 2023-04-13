@@ -51,17 +51,10 @@ module TB_dotProduct;
         in_kernel = {3'b101, 3'b010, 3'b001};
         
         #10
-
         a = `B'b1111; 
         b = `B'b0110;
         c = `B'b1010;
 
-        
-        // $display("%b", test_max_pooling.i_data_layers[2]);
-        // $display("%b", test_max_pooling.i_data_layers[1]);
-        // $display("%b", test_max_pooling.i_data_layers[0]);
-//        $display("%b", test1.i_data_layers);
-//        $display("%b", test1.o_data_layers[1]);
     end
     
 //    always @(*) begin
