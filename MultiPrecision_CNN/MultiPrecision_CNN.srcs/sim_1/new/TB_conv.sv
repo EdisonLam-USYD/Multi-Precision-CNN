@@ -33,8 +33,8 @@ module TB_conv;
    
     logic [1:0] out;
 
-    logic [2:0][`IW-1:0][`B-1:0] image;
-    logic [`NoK-1:0][`N-1:0][`N-1:0][`k-1:0] kernels;
+    logic [`IW-1:0][`IW-1:0][`B-1:0] image;
+    logic [`NoK-1:0][`N-1:0][`N-1:0][`K-1:0] kernels;
     integer counter;
     logic clk;
     logic res_n;
@@ -45,15 +45,14 @@ module TB_conv;
     initial
     begin
         // $monitor("@ %0t:\n\t\t%b %b\n %b", $time);
-        image = {{1, 0, 0, 1}, {1, 1, 1, 1}, {0, 1, 1, 1}};
+        image = {{2'b01, 2'b00, 2'b00, 2'b01}, {2'b01, 2'b01, 2'b01, 2'b01}, {2'b00, 2'b01, 2'b01, 2'b01}, {2'b00, 2'b01, 2'b01, 2'b01}};
         counter = 0;
         clk = -1;
         res_n = 0;
-        kernel[0] = {{'b10, 'b11, 'b01}, {'b01, 'b01, 'b01}, {'b11, 'b11, 'b11}};
+        kernels[0] = {{2'b10, 2'b11, 2'b01}, {2'b01, 2'b01, 2'b01}, {2'b11, 2'b11, 2'b11}};
     end
 
     logic [`B-1:0] in_data = image[counter/`IW][counter%`IW];
-    assign 
 
     always begin
         #10
@@ -72,5 +71,5 @@ module TB_conv;
 
 
     convolution_stage #(.NumberOfK(`NoK), .N(`N), .BitSize(`B), .KernelBitSize(`K), .ImageWidth(`IW)) conv_s 
-        (.clk(clk), .res_n(res_n), .in_valid(in_valid), .kernel(kernel[0]), .in_data(in_data), .out_ready(out_ready), .out_valid(out_valid), .out_data(out_data));
+        (.clk(clk), .res_n(res_n), .in_valid(in_valid), .kernel(kernels[0]), .in_data(in_data), .out_ready(out_ready), .out_valid(out_valid), .out_data(out_data));
 endmodule
