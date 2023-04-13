@@ -31,28 +31,35 @@ module TB_dotProduct;
    
     logic [`B*(`N*`N)-1:0] out;
     logic [`B-1:0] max;
+    logic [`B-1:0] sum;
     
     logic [`B-1:0] a, b, c;
+
+    assign in_conv = {{a,b,c},{b,c,a},{c,a,b}};
     
     initial begin
-        a = `B'b1100;
+        $monitor("in = %d,  kern = %d   out = %d\nin = %d,  kern = %d   out = %d\nin = %d,  kern = %d   out = %d\nSum: %d\nMax was found to be: %d", 
+            test1.i_data_layers[2], test1.kernel_layers[2], test1.o_data_layers[2],
+            test1.i_data_layers[1], test1.kernel_layers[1], test1.o_data_layers[1],
+            test1.i_data_layers[0], test1.kernel_layers[0], test1.o_data_layers[0], sum, max);
+        
+        a = `B'b1100; 
         b = `B'b0100;
         c = `B'b0010;
         
         
-        in_conv = {{a,a,a},{b,b,b},{c,c,c}};
-        in_kernel = {3'b101, 3'b101, 3'b101};
+        in_kernel = {3'b101, 3'b010, 3'b001};
         
         #10
 
-        $display("in = %b,  kern = %b   out = %b", test1.i_data_layers[2], test1.kernel_layers[2], test1.o_data_layers[2]);
-        $display("in = %b,  kern = %b   out = %b", test1.i_data_layers[1], test1.kernel_layers[1], test1.o_data_layers[2]);
-        $display("in = %b,  kern = %b   out = %b", test1.i_data_layers[0], test1.kernel_layers[0], test1.o_data_layers[2]);
-        $display("Max was found to be: %d", max);
+        a = `B'b1111; 
+        b = `B'b0110;
+        c = `B'b1010;
+
         
-        $display("%b", test_max_pooling.i_data_layers[2]);
-        $display("%b", test_max_pooling.i_data_layers[1]);
-        $display("%b", test_max_pooling.i_data_layers[0]);
+        // $display("%b", test_max_pooling.i_data_layers[2]);
+        // $display("%b", test_max_pooling.i_data_layers[1]);
+        // $display("%b", test_max_pooling.i_data_layers[0]);
 //        $display("%b", test1.i_data_layers);
 //        $display("%b", test1.o_data_layers[1]);
     end
@@ -63,6 +70,8 @@ module TB_dotProduct;
 //        $display("in = %b,  kern = %b   out = %b", in_conv[5:0], in_kernel[2:0], out[5:0]);
 //    end
     
-    dot_NxN #(.N(`N), .BitSize(`B), .KernelBitSize(`K), .SumDepth(32))     test1 (.kernel(in_kernel), .i_data(in_conv), .o_data(out), .sum()); 
-    max_pooling #(.N(`N), .BitSize(`B))                                     test_max_pooling (.i_data(out), .signed_check(1), .o_max(max));
+    dot_NxN #(.N(`N), .BitSize(`B), .KernelBitSize(`K))     
+        test1 (.kernel(in_kernel), .i_data(in_conv), .o_data(out), .sum(sum)); 
+    max_pooling #(.N(`N), .BitSize(`B))
+        test_max_pooling (.i_data(out), .signed_check(0), .o_max(max));
 endmodule

@@ -20,13 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 // testing for kernel precision of 1 bit
-// dot_NxN #(.N(3), .BitSize(8), .KernelBitSize(1), .SumDepth(32)) test1 (.kernel(), .i_data(), .o_data(), .sum());
-module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4, SumDepth = BitSize)
+// dot_NxN #(.N(3), .BitSize(8), .KernelBitSize(1)) test1 (.kernel(), .i_data(), .o_data(), .sum());
+module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4)
     (
     input [KernelBitSize*(N*N)-1:0] kernel,
     input signed [BitSize*(N*N)-1:0] i_data,
     output logic [BitSize*(N*N)-1:0] o_data,
-    output logic [SumDepth-1:0] sum // not implemented yet
+    output logic [BitSize-1:0] sum
     );
     
 //    logic [N*N-1:0] in_shell;   // ? x ? matrix from i_data (i.e. image)
@@ -37,7 +37,7 @@ module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4, SumDepth = BitSize)
     
     assign kernel_layers = kernel;
     assign i_data_layers = i_data;
-    assign o_data_layers = o_data;
+    assign o_data = o_data_layers;
     
     genvar i;
     generate 
