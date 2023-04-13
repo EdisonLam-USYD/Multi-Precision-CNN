@@ -32,4 +32,4 @@ module multiply_4Bit #(BitSize = 32, FixedPointPos = 0)
 
     assign temp_out             = (i_data*i_prod) >>> FixedPointPos;
     assign o_data               = temp_out[BitSize-1:0];
-endmodule 
+endmodule
