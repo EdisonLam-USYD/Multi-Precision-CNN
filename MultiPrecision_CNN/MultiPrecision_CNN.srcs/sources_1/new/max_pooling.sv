@@ -25,7 +25,6 @@
 // max_pooling #(.N(), .BitSize()) test_max_pooling (.i_data(), .o_max());
 module max_pooling #(N = 3, BitSize = 8) (
     input signed [BitSize*(N*N)-1:0] i_data,
-    input signed_check,
     output logic [BitSize-1:0] o_max
     );
     localparam int size = N*N;
@@ -42,10 +41,7 @@ module max_pooling #(N = 3, BitSize = 8) (
         // scan through all the i_data and find max
         for (i = 0; i < size; i = i + 1) begin
 //            $display("%d: %d", i, $signed(i_data_layers[i]));
-            if (signed_check)
-                o_max = ($signed(o_max) < $signed(i_data_layers[i])) ? i_data_layers[i] :  o_max;
-            else
-                o_max = ($unsigned(o_max) < $unsigned(i_data_layers[i])) ? i_data_layers[i] :  o_max;
+            o_max = ($signed(o_max) < $signed(i_data_layers[i])) ? i_data_layers[i] :  o_max;
         end
     end
     

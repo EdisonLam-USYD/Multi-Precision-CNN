@@ -19,7 +19,8 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
+// i_prod = 1 -> * 1
+// i_prod = 0 -> * -1
 module multiply_1Bit #(BitSize = 32)
     (
     input signed [BitSize-1:0] i_data,
@@ -32,7 +33,7 @@ module multiply_1Bit #(BitSize = 32)
             o_data = i_data;
         end 
         else begin
-            o_data = BitSize'('b0);
+            o_data = ~i_data + 1;
         end
     end
 endmodule

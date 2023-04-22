@@ -39,15 +39,14 @@ module TB_dotProduct;
     
     initial begin
         $monitor("in = %d,  kern = %d   out = %d\nin = %d,  kern = %d   out = %d\nin = %d,  kern = %d   out = %d\nSum: %d\nMax was found to be: %d", 
-            test1.i_data_layers[2], test1.kernel_layers[2], test1.o_data_layers[2],
-            test1.i_data_layers[1], test1.kernel_layers[1], test1.o_data_layers[1],
-            test1.i_data_layers[0], test1.kernel_layers[0], test1.o_data_layers[0], sum, max);
+            $signed(test1.i_data_layers[`N*`N-1:`N*`N-`N]), test1.kernel_layers[`N*`N-1:`N*`N-`N], $signed(test1.o_data_layers[`N*`N-1:`N*`N-`N]),
+            $signed(test1.i_data_layers[`N*`N-`N-1:`N*`N-2*`N]), test1.kernel_layers[`N*`N-`N-1:`N*`N-2*`N], $signed(test1.o_data_layers[`N*`N-`N-1:`N*`N-2*`N]),
+            $signed(test1.i_data_layers[`N-1:0]), test1.kernel_layers[`N-1:0], $signed(test1.o_data_layers[`N-1:0]), $signed(sum), $signed(max));
         
         a = `B'b1100; 
         b = `B'b0100;
         c = `B'b0010;
-        
-        
+
         in_kernel = {3'b101, 3'b010, 3'b001};
         
         #10
@@ -66,5 +65,5 @@ module TB_dotProduct;
     dot_NxN #(.N(`N), .BitSize(`B), .KernelBitSize(`K))     
         test1 (.kernel(in_kernel), .i_data(in_conv), .o_data(out), .sum(sum)); 
     max_pooling #(.N(`N), .BitSize(`B))
-        test_max_pooling (.i_data(out), .signed_check(0), .o_max(max));
+        test_max_pooling (.i_data(out), .o_max(max));
 endmodule

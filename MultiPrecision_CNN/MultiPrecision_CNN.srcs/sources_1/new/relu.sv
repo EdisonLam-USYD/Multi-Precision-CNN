@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 28.03.2023 13:24:03
+// Create Date: 22.04.2023 14:01:09
 // Design Name: 
-// Module Name: overflow_detect
+// Module Name: relu
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,7 +20,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module overflow_detect(
-
+module relu #(BitSize = 32)
+    (
+        input [BitSize-1:0] i_data,
+        output logic [BitSize-1:0] o_data
     );
+
+    always_comb begin
+        case (i_data[BitSize-1])
+            1: o_data = 0;
+            0: o_data = i_data;
+        endcase
+    end
 endmodule

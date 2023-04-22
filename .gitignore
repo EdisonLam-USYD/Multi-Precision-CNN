@@ -1,2 +1,12 @@
 MultiPrecision_CNN/MultiPrecision_CNN.srcs/obj_dir/*
 MultiPrecision_CNN/MultiPrecision_CNN.srcs/sources_1/new/obj_dir/*
+*.wpc
+MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/simulate.log
+*.log
+*.prj
+*.c
+*.dbg
+*.obj
+*.reloc
+*.sdb
+*.xpr
