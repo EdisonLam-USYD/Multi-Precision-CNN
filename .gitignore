@@ -10,3 +10,9 @@ MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/simulate.log
 *.reloc
 *.sdb
 *.xpr
+*.log
+*.wdb
+*.xdbg
+*.exe
+*.log
+*.log
