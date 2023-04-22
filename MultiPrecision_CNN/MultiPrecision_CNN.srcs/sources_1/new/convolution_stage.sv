@@ -39,7 +39,7 @@ module convolution_stage #(NumberOfK = 1, N = 3, BitSize=32, KernelBitSize = 4, 
       	
     );
   
-  	localparam StreamSize = 	(ImageWidth+2)*2+(N+1); 
+  	localparam StreamSize = 	(ImageWidth+2)*2+(N+1); // only works for N = 3
   
   	logic [StreamSize-1:0][BitSize-1:0] data_stream_r;
   	integer 					image_pos_r;
@@ -111,7 +111,7 @@ module convolution_stage #(NumberOfK = 1, N = 3, BitSize=32, KernelBitSize = 4, 
 		end
     end
   
-  dot_NxN #(.N(N), .BitSize(BitSize), .KernelBitSize(KernelBitSize)) dot_product (.kernel(kernel), .i_data(dot_product_in_c), .o_data(), .sum(out_data));
+  dot_NxN #(.N(N), .BitSize(BitSize), .KernelBitSize(KernelBitSize)) dot_product (.kernel(kernel), .in_data(dot_product_in_c), .out_data(), .sum(out_data));
   
   	always@(posedge clk) begin
     	if(!res_n)

@@ -23,17 +23,17 @@
 // i_prod = 0 -> * -1
 module multiply_1Bit #(BitSize = 32)
     (
-    input signed [BitSize-1:0] i_data,
+    input signed [BitSize-1:0] in_data,
     input i_prod,
-    output logic [BitSize-1:0] o_data
+    output logic [BitSize-1:0] out_data
     );
     
     always_comb begin
         if (i_prod) begin
-            o_data = i_data;
+            out_data = in_data;
         end 
         else begin
-            o_data = ~i_data + 1;
+            out_data = ~in_data + 1;
         end
     end
 endmodule

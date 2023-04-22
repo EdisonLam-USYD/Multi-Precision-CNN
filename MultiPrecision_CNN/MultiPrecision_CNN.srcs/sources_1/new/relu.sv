@@ -22,14 +22,14 @@
 
 module relu #(BitSize = 32)
     (
-        input [BitSize-1:0] i_data,
-        output logic [BitSize-1:0] o_data
+        input [BitSize-1:0] in_data,
+        output logic [BitSize-1:0] out_data
     );
 
     always_comb begin
-        case (i_data[BitSize-1])
-            1: o_data = 0;
-            0: o_data = i_data;
+        case (in_data[BitSize-1])
+            1: out_data = 0;
+            0: out_data = in_data;
         endcase
     end
 endmodule
