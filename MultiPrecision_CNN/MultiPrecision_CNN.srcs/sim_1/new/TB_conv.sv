@@ -19,57 +19,92 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-`define B 2
-`define N 3
-`define K 2
-`define IW 4
-`define NoK 1
-
-
 module TB_conv;
 
-    logic [`K*(`N*`N)-1:0] in_kernel;
-    logic [`B*(`N*`N)-1:0] in_conv;
+    // logic [`K*(`N*`N)-1:0] in_kernel;
+    // logic [`B*(`N*`N)-1:0] in_conv;
    
-    logic [1:0] out;
+    // logic [1:0] out;
 
-    logic [`IW-1:0][`IW-1:0][`B-1:0] image;
-    logic [`NoK-1:0][`N-1:0][`N-1:0][`K-1:0] kernels;
-    integer counter;
+    // logic [`IW-1:0][`IW-1:0][`B-1:0] image;
+    // integer counter;
+    // logic clk;
+    // logic res_n;
+    // logic in_valid;
+    // logic out_ready;
+    // logic [2:0][`IW-1:0][`B-1:0] out_data;
+
+    localparam BitSize = 2;
+    localparam N = 3;
+    localparam ImageWidth = 4;
+    localparam K = 2;
+    localparam NoK = 1;
+
     logic clk;
     logic res_n;
     logic in_valid;
+    logic [BitSize-1:0] in_data;
     logic out_ready;
-    logic [2:0][`IW-1:0][`B-1:0] out_data;
+    logic out_valid;
+    logic [BitSize-1:0] out_data;
+
+    logic [ImageWidth*ImageWidth-1:0][BitSize-1:0] test_image;
+    logic [BitSize-1:0] a;
+    logic [BitSize-1:0] b;
+    logic [BitSize-1:0] c;
+    logic [BitSize-1:0] d;
+
+    logic [NoK-1:0][N-1:0][N-1:0][K-1:0] kernels;
+    
+    convolution_stage #(.NumberOfK(NoK), .N(N), .BitSize(B), .KernelBitSize(K), .ImageWidth(IW)) conv_s 
+        (.clk(clk), .res_n(res_n), .in_valid(in_valid), .kernel(kernels[0]), .in_data(in_data), .out_ready(out_ready), .out_valid(out_valid), .out_data(out_data));
 
     initial
     begin
         // $monitor("@ %0t:\n\t\t%b %b\n %b", $time);
-        image = {{2'b01, 2'b00, 2'b00, 2'b01}, {2'b01, 2'b01, 2'b01, 2'b01}, {2'b00, 2'b01, 2'b01, 2'b01}, {2'b00, 2'b01, 2'b01, 2'b01}};
-        counter = 0;
-        clk = -1;
+        a = 2'b11;
+        b = 2'b10;
+        c = 2'b01;
+        d = 2'b00;
+        test_image =   {a, b, b, c,
+                        d, d, c, a,
+                        c, b, d, d,
+                        c, d, d, d};
         res_n = 0;
-        kernels[0] = {{2'b10, 2'b11, 2'b01}, {2'b01, 2'b01, 2'b01}, {2'b11, 2'b11, 2'b11}};
-    end
-
-    logic [`B-1:0] in_data = image[counter/`IW][counter%`IW];
-
-    always begin
-        #10
-        res_n = 1;
-        if (out_ready) 
-        begin
-            counter = counter + 1;
-        end
-        in_valid = 1;
         clk = 1;
-        #10
+        #2
+        res_n = 1;
         clk = 0;
-        
+        kernels[0] = {{2'b10, 2'b11, 2'b01}, {2'b01, 2'b01, 2'b01}, {2'b11, 2'b11, 2'b11}};
+
+        for (int counter = 1; counter <= ImageWidth*ImageWidth; counter = counter) begin
+            #10
+            clk = 1;
+            in_data = test_image[ImageWidth*ImageWidth - counter];
+            in_valid = 1;
+            #10
+            clk = 0;
+            if (out_ready) begin
+                counter = counter + 1;
+            end
+          
+        end
     end
 
+    // logic [`B-1:0] in_data = image[counter/`IW][counter%`IW];
 
+    // always begin
+    //     #10
+    //     res_n = 1;
+    //     if (out_ready) 
+    //     begin
+    //         counter = counter + 1;
+    //     end
+    //     in_valid = 1;
+    //     clk = 1;
+    //     #10
+    //     clk = 0;
+        
+    // end
 
-    convolution_stage #(.NumberOfK(`NoK), .N(`N), .BitSize(`B), .KernelBitSize(`K), .ImageWidth(`IW)) conv_s 
-        (.clk(clk), .res_n(res_n), .in_valid(in_valid), .kernel(kernels[0]), .in_data(in_data), .out_ready(out_ready), .out_valid(out_valid), .out_data(out_data));
 endmodule
