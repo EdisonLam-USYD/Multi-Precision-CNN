@@ -65,9 +65,7 @@ module TB_pooling_layer;
         clk = 0;
 
         $monitor("@ %0t:\tbuffer_r = %p\n\t\t\tbuffer_c = %p\n\t\t\tpooling_data = %p\n\t\t\tout = %b, out_valid = %b", $time, data_stream_r, data_stream_c, pooling, out_data, out_valid);
-    end
-
-    always @(*) begin
+        
         for (int counter = 1; counter <= ImageWidth*ImageWidth; counter = counter) begin
             #10
             clk = 1;
@@ -80,8 +78,11 @@ module TB_pooling_layer;
             end
           
         end
-
     end
+
+    // always @(*) begin
+
+    // end
 
 
 
