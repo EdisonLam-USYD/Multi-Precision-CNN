@@ -22,7 +22,9 @@
 // utilises max pooling module to shrink down a whole input image based pooling size
 // assumes ImageWidth % N = 0
 // also assumes input will be streamed in similar to convolution stage
-module max_pooling_layer #(N = 2, ImageWidth = 4, BitSize = 32)
+// latency of 1 because when testing for 0, it does not run as expected
+// max_pooling_layer #(.N(), .ImageWidth(), .BitSize()) pooling_layer (.clk(), .res_n(), .in_valid(), .in_data(), .out_ready(), .out_valid(), .out_data());
+module max_pooling_layer #(N = 2, ImageWidth = 4, BitSize = 32, Stride = 2)
     (
         input                       clk,
         input                       res_n,
@@ -42,11 +44,23 @@ module max_pooling_layer #(N = 2, ImageWidth = 4, BitSize = 32)
     logic [StreamSize-1:0][BitSize-1:0] data_stream_c;
   	integer 					image_pos_r;
   	integer						image_pos_c;
+	logic [N-1:0][N-1:0][BitSize-1:0]	pooling_data;
+
+	genvar i;
+	genvar j;
+	generate;
+		for (i = 0; i < N; i = i + 1) begin
+			for (j = 0; j < N; j = j + 1) begin
+				assign pooling_data[i][j] = data_stream_r[i * ImageWidth + j]; // change to data_stream_c for 0 latency
+			end
+		end
+	endgenerate
 
     always@(posedge clk) begin
     	if(!res_n)
       	begin
-        image_pos_r <= 0;
+        	image_pos_r <= 0;
+			data_stream_r <= 'b0;
       	end
     	else
       	begin
@@ -55,23 +69,23 @@ module max_pooling_layer #(N = 2, ImageWidth = 4, BitSize = 32)
         end
   	end
 
+    assign out_valid = (image_pos_r >= StreamSize && (image_pos_r % Stride == 0));  // change to c for 0 latency
+    
     always_comb begin
-        out_valid = 0;
-        out_ready = 0;
+        out_ready = 1;
         data_stream_c = data_stream_r;
         image_pos_c = image_pos_r;
 
         if (in_valid) begin         // store values
-            image_pos_c = image_pos_c + 1; 
-            data_stream_c = {data_stream_r[StreamSize*BitSize-1:BitSize], in_data};
-            out_ready = 1;
+            image_pos_c = image_pos_r + 1; 
+            data_stream_c = {data_stream_r[StreamSize-2:0], in_data};
+            // out_ready = 1;
         end
 
-        if (image_pos_c >= StreamSize) begin
 
-        end
-        
     end
+
+    max_pooling #(.N(N), .BitSize(BitSize)) pooling_func (.in_data(pooling_data), .out_data(out_data));
 
 
 endmodule
