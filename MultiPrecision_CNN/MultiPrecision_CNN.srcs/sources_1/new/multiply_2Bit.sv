@@ -27,7 +27,7 @@ module multiply_2Bit #(BitSize = 32)
     output logic [BitSize-1:0] out_data
     );
     // 1st bit is signed bit, 2nd is whether it is 1 or 0
-    assign out_data = (i_prod[0]) ? ((i_prod[1]) ? in_data: ~in_data+1) : 0;
+    assign out_data = (i_prod[0]) ? ((i_prod[1]) ? ~in_data+1 : in_data) : 0;
     // always_comb begin
     //     case (i_prod) 
     //         2'b00: out_data <= BitSize'('b0);
