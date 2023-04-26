@@ -25,7 +25,7 @@ module TB_nerveLayers;
     localparam BitSize = 4;
     localparam Weight_BitSize = 2;
     localparam NumOfInputs = 2;
-    localparam NumOfNerves = 2;
+    localparam NumOfNerves = 3;
     localparam Height = 4;
 
     logic                                   clk;
@@ -72,16 +72,16 @@ module TB_nerveLayers;
         b = 4'b0010;
         c = 4'b0001;
         d = 4'b0000;
-        weights =  {{c, d},
-                    {d, c}};
+        weights =  {{c, c, c},
+                    {d, d, d}};
         aaaaaaa = 4'b0111;
         bbbbbbb = 4'b0110;
         ccccccc = 4'b0101;
         ddddddd = 4'b0100;
         a_matrix = {{{aaaaaaa}, {4'b0000}},
-                    {{bbbbbbb}, {aaaaaaa}},
-                    {{ccccccc}, {bbbbbbb}},
-                    {{ddddddd}, {ccccccc}},
+                    {{aaaaaaa}, {aaaaaaa}},
+                    {{aaaaaaa}, {bbbbbbb}},
+                    {{aaaaaaa}, {ccccccc}},
                     {{4'b0000}, {ddddddd}}};
         res_n = 0;
         clk = 0;

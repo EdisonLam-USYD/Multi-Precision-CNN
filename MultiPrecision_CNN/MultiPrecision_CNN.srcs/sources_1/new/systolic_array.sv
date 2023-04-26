@@ -83,14 +83,14 @@ module systolic_array #(BitSize = 8, Weight_BitSize = 2, NumOfInputs = 2, NumOfN
     logic [NumOfNerves-1:0][BitSize-1:0] in_w;
     logic [NumOfNerves-1:0][BitSize-1:0] in_pa;
     logic [NumOfNerves-1:0][BitSize-1:0] out_array;
-    logic [NumOfNerves+NumOfInputs-1:0] done_check;
+    logic [2*NumOfInputs-1:0] done_check;
 
     assign t_in_data = in_data;
     assign in_w = in_weights;
     assign in_pa = in_partial_sum;
     assign out_data = out_array;
     assign out_done = done_check[NumOfInputs];
-    assign out_valid = done_check[NumOfNerves+NumOfInputs-1:NumOfInputs] != 0;
+    assign out_valid = done_check[2*NumOfInputs-1:NumOfInputs] != 0;
 
     always_ff @(posedge clk) begin
         if (!res_n) begin
@@ -162,7 +162,7 @@ module systolic_array #(BitSize = 8, Weight_BitSize = 2, NumOfInputs = 2, NumOfN
 
     // generating counter pipeline to show out_done
     generate;
-        for (genvar l = 1; l < NumOfNerves + NumOfInputs; l = l + 1) begin : start_pl
+        for (genvar l = 1; l < 2*NumOfInputs; l = l + 1) begin : start_pl
             always_ff @(posedge clk) begin
                 if (!res_n) begin 
                     done_check[l] <= 1'b0;
