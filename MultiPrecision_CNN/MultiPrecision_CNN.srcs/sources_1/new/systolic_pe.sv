@@ -49,8 +49,8 @@ module systolic_pe #(BitSize = 8, M_W_BitSize = 8, Weight_BitSize = 8)
         end
         else begin
             stored_b <= stored_b_c;
-            out_partial_sum         <= out_value;
             if (in_valid) begin
+                out_partial_sum     <= out_value;
                 out_a               <= in_a;
             end
             out_b                   <= in_b;
