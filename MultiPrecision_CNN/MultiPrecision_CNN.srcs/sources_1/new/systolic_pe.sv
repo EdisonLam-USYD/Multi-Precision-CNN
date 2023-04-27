@@ -37,23 +37,27 @@ module systolic_pe #(BitSize = 8, Weight_BitSize = 8)
 
     logic   [Weight_BitSize-1:0]    stored_b;
     logic   [Weight_BitSize-1:0]    stored_b_c;
+    // logic   [BitSize-1:0]           partial_sum;
     wire    [BitSize-1:0]           out_value;
     wire    [BitSize-1:0]           multi_val;
 
     always_ff @(posedge clk) begin
         if (!res_n) begin
-            stored_b    <= 'b0;
-            out_a       <= in_a;
-            out_b       <= in_b;
+            stored_b                <= 'b0;
+            out_partial_sum         <= 'b0;
+            out_a                   <= 'b0;
+            out_b                   <= in_b;
         end
         else begin
             stored_b <= stored_b_c;
-            out_b                   <= in_b;
+            // partial_sum             <= in_partial_sum;
+            out_partial_sum         <= out_value;
             if (in_valid) begin
                 out_a               <= in_a;
             end
-            out_partial_sum         <= out_value;
+            out_b                   <= in_b;
         end
+
         // $display("in_a:%b, in_b:%b, stored_b:%b, in_ps:%b, out: %b", in_a, in_b, stored_b, in_partial_sum, out_partial_sum);
     end
 

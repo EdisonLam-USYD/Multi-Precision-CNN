@@ -83,14 +83,14 @@ module systolic_array #(BitSize = 8, Weight_BitSize = 2, NumOfInputs = 2, NumOfN
     logic [NumOfNerves-1:0][BitSize-1:0] in_w;
     logic [NumOfNerves-1:0][BitSize-1:0] in_pa;
     logic [NumOfNerves-1:0][BitSize-1:0] out_array;
-    logic [2*NumOfInputs-1:0] done_check;
+    logic [NumOfNerves+NumOfInputs-1:0] done_check;
 
-    assign t_in_data = in_data;
+    // assign t_in_data = in_data;  // this bugs it out for some reason
+    // assign out_data = out_array; // same
     assign in_w = in_weights;
     assign in_pa = in_partial_sum;
-    assign out_data = out_array;
-    assign out_done = done_check[NumOfInputs];
-    assign out_valid = done_check[2*NumOfInputs-1:NumOfInputs] != 0;
+    // assign out_done = done_check[NumOfInputs];       // when done in an assign it lasts an extra positive clock edge (wrong)
+    // assign out_valid = done_check[NumOfNerves+NumOfInputs-1:NumOfInputs] != 0;
 
     always_ff @(posedge clk) begin
         if (!res_n) begin
@@ -102,13 +102,17 @@ module systolic_array #(BitSize = 8, Weight_BitSize = 2, NumOfInputs = 2, NumOfN
                 counter_w   <= counter_w + 1;
             end
             done_check[0]   <= in_start;
+            out_done        <= done_check[NumOfInputs-1];
+            out_valid       <= done_check[NumOfInputs-1+:NumOfNerves] != 0;
         end
     end 
 
     // condition for when there is output: counter_in_r > NumOfInputs + NumOfNerves
     always_comb begin
+        t_in_data = in_data;
         en_l_b = (counter_w + 1 == NumOfInputs) ? 1'b1 : 1'b0;
         out_ready = (counter_w + 1 >= NumOfInputs) ? 1'b1 : 1'b0;        // out_ready is on when all weights are loaded in
+        out_data = out_array;
         // out_valid = 'b0;
         // $display("............out_valid: %b | %b", done_check[NumOfNerves+:NumOfInputs+1], out_valid);
         // out_valid = (done_check[NumOfNerves+:NumOfInputs+1] != 3'b0) ? 1 : 0;
@@ -146,9 +150,6 @@ module systolic_array #(BitSize = 8, Weight_BitSize = 2, NumOfInputs = 2, NumOfN
                     (.clk(clk), .res_n(res_n), .in_valid(in_valid), .en_l_b(en_l_b), .in_a(si[i].sj[j-1].out_a), .in_b(si[i-1].sj[j].out_b), 
                     .in_partial_sum(si[i-1].sj[j].out_ps), .out_a(si[i].sj[j].out_a), .out_b(si[i].sj[j].out_b), .out_partial_sum(si[i].sj[j].out_ps));
                 end
-                // systolic_pe #(.BitSize(BitSize), .Weight_BitSize(2)) s_block 
-                //     (.clk(clk), .res_n(res_n), .in_valid(in_valid), .en_l_b(en_l_b), .in_a(si[i].sj[j].in_a), .in_b(si[i].sj[j].in_b), 
-                //     .in_partial_sum(si[i].sj[j].in_ps), .out_a(si[i].sj[j].out_a), .out_b(si[i].sj[j].out_b), .out_partial_sum(si[i].sj[j].out_ps));
             end
         end
     endgenerate
@@ -162,7 +163,7 @@ module systolic_array #(BitSize = 8, Weight_BitSize = 2, NumOfInputs = 2, NumOfN
 
     // generating counter pipeline to show out_done
     generate;
-        for (genvar l = 1; l < 2*NumOfInputs; l = l + 1) begin : start_pl
+        for (genvar l = 1; l < NumOfNerves + NumOfInputs; l = l + 1) begin : start_pl
             always_ff @(posedge clk) begin
                 if (!res_n) begin 
                     done_check[l] <= 1'b0;
