@@ -85,8 +85,8 @@ module systolic_array #(BitSize = 8, Weight_BitSize = 2, NumOfInputs = 2, NumOfN
     logic [NumOfNerves-1:0][BitSize-1:0] out_array;
     logic [NumOfNerves+NumOfInputs-1:0] done_check;
 
-    // assign t_in_data = in_data;  // this bugs it out for some reason
-    // assign out_data = out_array; // same
+    // assign t_in_data = in_data;  // this bugs it out for some reason, making the first column in_a == second column
+    assign out_data = out_array;
     assign in_w = in_weights;
     assign in_pa = in_partial_sum;
     // assign out_done = done_check[NumOfInputs];       // when done in an assign it lasts an extra positive clock edge (wrong)
@@ -101,7 +101,7 @@ module systolic_array #(BitSize = 8, Weight_BitSize = 2, NumOfInputs = 2, NumOfN
             if (counter_w < NumOfInputs + 1) begin
                 counter_w   <= counter_w + 1;
             end
-            done_check[0]   <= in_start;
+            done_check[0]   <= in_start && in_valid;
             out_done        <= done_check[NumOfInputs-1];
             out_valid       <= done_check[NumOfInputs-1+:NumOfNerves] != 0;
         end
@@ -112,14 +112,7 @@ module systolic_array #(BitSize = 8, Weight_BitSize = 2, NumOfInputs = 2, NumOfN
         t_in_data = in_data;
         en_l_b = (counter_w + 1 == NumOfInputs) ? 1'b1 : 1'b0;
         out_ready = (counter_w + 1 >= NumOfInputs) ? 1'b1 : 1'b0;        // out_ready is on when all weights are loaded in
-        out_data = out_array;
-        // out_valid = 'b0;
-        // $display("............out_valid: %b | %b", done_check[NumOfNerves+:NumOfInputs+1], out_valid);
-        // out_valid = (done_check[NumOfNerves+:NumOfInputs+1] != 3'b0) ? 1 : 0;
-        // for (int i = 0; i < NumOfInputs + 1; i = i + 1) begin
-        //     $display("............out_valid: %b | %b", done_check[NumOfNerves+:NumOfInputs+1], out_valid);
-        //     out_valid = (done_check[NumOfNerves+i] == 1'b1 || out_valid == 1'b1) ? 1'b1 : 1'b0;
-        // end
+        // out_data = out_array;
     end
 
     genvar i;
