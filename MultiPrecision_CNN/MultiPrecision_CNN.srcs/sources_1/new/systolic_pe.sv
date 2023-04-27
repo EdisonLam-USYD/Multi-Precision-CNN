@@ -20,24 +20,23 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 // systolic processing element, used for matrix multiplication within layers and hidden layers to avoid fan-out
-// systolic_pe #(.BitSize(), .Weight_BitSize()) s_block (.clk(clk), .res_n(), .en_l_b(), .in_a(), .in_b(), .in_partial_sum(), .out_a(), .out_b(), .out_partial_sum());
-module systolic_pe #(BitSize = 8, Weight_BitSize = 8)
+// systolic_pe #(.BitSize(), .Weight_BitSize(), .M_W_BitSize()) s_block (.clk(clk), .res_n(), .en_l_b(), .in_a(), .in_b(), .in_partial_sum(), .out_a(), .out_b(), .out_partial_sum());
+module systolic_pe #(BitSize = 8, M_W_BitSize = 8, Weight_BitSize = 8)
     (
         input                               clk,
         input                               res_n,
         input                               in_valid,
         input                               en_l_b,              // loads weight on high and passes on the current weight
         input [BitSize-1:0]                 in_a,
-        input [BitSize-1:0]                 in_b,               // actual value can be stored based on Weight_BitSize
+        input [M_W_BitSize-1:0]             in_b,               // actual value can be stored based on Weight_BitSize
         input [BitSize-1:0]                 in_partial_sum,
         output logic [BitSize-1:0]          out_a,
-        output logic [BitSize-1:0]          out_b,
+        output logic [M_W_BitSize-1:0]      out_b,
         output logic [BitSize-1:0]          out_partial_sum
     );
 
     logic   [Weight_BitSize-1:0]    stored_b;
     logic   [Weight_BitSize-1:0]    stored_b_c;
-    // logic   [BitSize-1:0]           partial_sum;
     wire    [BitSize-1:0]           out_value;
     wire    [BitSize-1:0]           multi_val;
 
@@ -50,7 +49,6 @@ module systolic_pe #(BitSize = 8, Weight_BitSize = 8)
         end
         else begin
             stored_b <= stored_b_c;
-            // partial_sum             <= in_partial_sum;
             out_partial_sum         <= out_value;
             if (in_valid) begin
                 out_a               <= in_a;
@@ -62,7 +60,7 @@ module systolic_pe #(BitSize = 8, Weight_BitSize = 8)
     end
 
     assign out_value = in_partial_sum + multi_val;
-    assign stored_b_c = (en_l_b) ? out_b : stored_b;
+    assign stored_b_c = (en_l_b) ? out_b[Weight_BitSize-1:0] : stored_b;
 
     generate 
         if (Weight_BitSize == 1) begin

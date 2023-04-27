@@ -23,6 +23,7 @@
 module TB_nerveLayers;
 
     localparam BitSize = 8;
+    localparam M_W_BitSize = 8;
     localparam Weight_BitSize = 2;
     localparam NumOfInputs = 3;
     localparam NumOfNerves = 3;
@@ -41,16 +42,16 @@ module TB_nerveLayers;
     logic                            out_done;
     logic [NumOfNerves*BitSize-1:0]              out_data;
 
-    systolic_array #(.BitSize(BitSize), .Weight_BitSize(Weight_BitSize), .NumOfInputs(NumOfInputs), .NumOfNerves(NumOfNerves)) 
+    systolic_array #(.BitSize(BitSize), .Weight_BitSize(Weight_BitSize), .M_W_BitSize(M_W_BitSize), .NumOfInputs(NumOfInputs), .NumOfNerves(NumOfNerves)) 
         layer1 (.clk(clk), .res_n(res_n), .in_valid(in_valid), .in_start(in_start), .in_data(in_data), .in_weights(in_weights), .in_partial_sum(in_partial_sum), 
         .out_ready(out_ready), .out_valid(out_valid), .out_done(out_done), .out_data(out_data));
 
-    logic [NumOfInputs-1:0][NumOfNerves-1:0][BitSize-1:0] weights;
+    logic [NumOfInputs-1:0][NumOfNerves-1:0][M_W_BitSize-1:0] weights;
     logic [NumOfInputs+(Height-2):0][NumOfInputs-1:0][BitSize-1:0] a_matrix;
-    logic [BitSize-1:0] a;
-    logic [BitSize-1:0] b;
-    logic [BitSize-1:0] c;
-    logic [BitSize-1:0] d;
+    logic [M_W_BitSize-1:0] a;
+    logic [M_W_BitSize-1:0] b;
+    logic [M_W_BitSize-1:0] c;
+    logic [M_W_BitSize-1:0] d;
 
     logic [BitSize-1:0] aaaaaaa;
     logic [BitSize-1:0] bbbbbbb;
@@ -68,10 +69,10 @@ module TB_nerveLayers;
         // layer1.si[0].sj[0].out_ps, layer1.si[0].sj[1].out_ps, layer1.si[1].sj[0].out_ps, layer1.si[1].sj[1].out_ps,
         // layer1.out_array, layer1.out_done, layer1.out_valid, layer1.done_check);
 
-        a = 8'b00000011;
-        b = 8'b00000010;
-        c = 8'b00000001;
-        d = 8'b00000000;
+        a = 4'b0011;
+        b = 4'b0010;
+        c = 4'b0001;
+        d = 4'b0000;
         weights =  {{c, d, a},
                     {d, c, d},
                     {d, c, c}};
