@@ -56,9 +56,12 @@ module TB_conv;
 
     logic [NoK-1:0][N-1:0][N-1:0][K-1:0] kernels;
     
-    convolution_stage #(.NumberOfK(NoK), .N(N), .BitSize(B), .KernelBitSize(K), .ImageWidth(IW)) conv_s 
+    convolution_stage #(.NumberOfK(NoK), .N(N), .BitSize(BitSize), .KernelBitSize(K), .ImageWidth(ImageWidth)) conv_s 
         (.clk(clk), .res_n(res_n), .in_valid(in_valid), .kernel(kernels[0]), .in_data(in_data), .out_ready(out_ready), .out_valid(out_valid), .out_data(out_data));
 
+    logic [BitSize-1:0] pooling [N*N-1:0];
+    assign {>>BitSize{pooling}} = conv_s.dot_product_in_c;
+    
     initial
     begin
         // $monitor("@ %0t:\n\t\t%b %b\n %b", $time);
@@ -76,6 +79,9 @@ module TB_conv;
         res_n = 1;
         clk = 0;
         kernels[0] = {{2'b10, 2'b11, 2'b01}, {2'b01, 2'b01, 2'b01}, {2'b11, 2'b11, 2'b11}};
+        
+        $monitor("@ %0t:\tbuffer_r = %p\n\t\t\tpooling_data = %p\n\t\t\tout = %b, out_valid = %b", 
+            $time, conv_s.data_stream_r, pooling, out_data, out_valid);
 
         for (int counter = 1; counter <= ImageWidth*ImageWidth; counter = counter) begin
             #10
