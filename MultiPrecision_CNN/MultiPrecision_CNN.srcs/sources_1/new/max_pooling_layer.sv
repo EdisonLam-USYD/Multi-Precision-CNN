@@ -69,7 +69,7 @@ module max_pooling_layer #(N = 2, ImageWidth = 4, BitSize = 32, Stride = 2)
         end
   	end
 
-    assign out_valid = (image_pos_r >= StreamSize && (image_pos_r % Stride == 0));  // change to c for 0 latency
+    assign out_valid = (image_pos_r >= StreamSize && (image_pos_r % Stride == 0)) && in_valid;  // change to c for 0 latency
     
     always_comb begin
         out_ready = 1;
