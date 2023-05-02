@@ -44,6 +44,8 @@ module max_pooling_layer #(N = 2, ImageWidth = 4, BitSize = 32, Stride = 2)
     logic [StreamSize-1:0][BitSize-1:0] data_stream_c;
   	integer 					image_pos_r;
   	integer						image_pos_c;
+    integer                     image_row_r;
+    integer                     image_row_c;
 	logic [N-1:0][N-1:0][BitSize-1:0]	pooling_data;
 
 	genvar i;
@@ -61,24 +63,31 @@ module max_pooling_layer #(N = 2, ImageWidth = 4, BitSize = 32, Stride = 2)
       	begin
         	image_pos_r <= 0;
 			data_stream_r <= 'b0;
+            image_row_r <= 0;
       	end
     	else
       	begin
         	image_pos_r <= image_pos_c;
+            image_row_r <= image_row_c;
             data_stream_r <= data_stream_c;
         end
   	end
 
-    assign out_valid = (image_pos_r >= StreamSize && (image_pos_r % Stride == 0)) && in_valid;  // change to c for 0 latency
+    assign out_valid = (image_pos_r >= StreamSize && (image_pos_r % Stride == 0) && (image_row_r % Stride == 0)) && in_valid;  // change to c for 0 latency
     
     always_comb begin
         out_ready = 1;
         data_stream_c = data_stream_r;
         image_pos_c = image_pos_r;
+        image_row_c = image_row_r;
 
         if (in_valid) begin         // store values
             image_pos_c = image_pos_r + 1; 
             data_stream_c = {data_stream_r[StreamSize-2:0], in_data};
+            if (image_pos_c - ImageWidth >= StreamSize) begin // means a whole row has been passed
+                image_pos_c = StreamSize;                       // assumes imagewidth is divisible by stride
+                image_row_c = image_row_r + 1;
+            end
             // out_ready = 1;
         end
 
