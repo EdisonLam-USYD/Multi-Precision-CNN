@@ -34,7 +34,7 @@ module TB_conv;
     // logic out_ready;
     // logic [2:0][`IW-1:0][`B-1:0] out_data;
 
-    localparam BitSize = 2;
+    localparam BitSize = 4;
     localparam N = 3;
     localparam ImageWidth = 4;
     localparam K = 2;
@@ -65,10 +65,10 @@ module TB_conv;
     initial
     begin
         // $monitor("@ %0t:\n\t\t%b %b\n %b", $time);
-        a = 2'b11;
-        b = 2'b10;
-        c = 2'b01;
-        d = 2'b00;
+        a = 4'b0111;
+        b = 4'b0010;
+        c = 4'b1111;
+        d = 4'b1000;
         test_image =   {a, b, b, c,
                         d, d, c, a,
                         c, b, d, d,

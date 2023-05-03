@@ -22,9 +22,9 @@
 
 module TB_pooling_layer;
 
-    localparam BitSize = 2;
-    localparam N = 2;
-    localparam ImageWidth = 4;
+    localparam BitSize = 4;
+    localparam N = 3;
+    localparam ImageWidth = 6;
 
     logic clk;
     logic res_n;
@@ -32,7 +32,7 @@ module TB_pooling_layer;
     logic [BitSize-1:0] in_data;
     logic out_ready;
     logic out_valid;
-    logic [BitSize-1:0] out_data;
+    logic signed [BitSize-1:0] out_data;
 
     max_pooling_layer #(.N(N), .ImageWidth(ImageWidth), .BitSize(BitSize), .Stride(N)) pooling_layer 
         (.clk(clk), .res_n(res_n), .in_valid(in_valid), .in_data(in_data), .out_ready(out_ready), .out_valid(out_valid), .out_data(out_data));
@@ -43,28 +43,30 @@ module TB_pooling_layer;
     logic [BitSize-1:0] c;
     logic [BitSize-1:0] d;
     
-    logic [BitSize-1:0] pooling [N*N-1:0];
-    logic [BitSize-1:0] data_stream_r [pooling_layer.StreamSize-1:0];
-    logic [BitSize-1:0] data_stream_c [pooling_layer.StreamSize-1:0];
+    logic signed [BitSize-1:0] pooling [N*N-1:0];
+    logic signed [BitSize-1:0] data_stream_r [pooling_layer.StreamSize-1:0];
+    logic signed [BitSize-1:0] data_stream_c [pooling_layer.StreamSize-1:0];
     assign {>>BitSize{data_stream_r}} = pooling_layer.data_stream_r;
     assign {>>BitSize{data_stream_c}} = pooling_layer.data_stream_c;
     assign {>>BitSize{pooling}} = pooling_layer.pooling_data;
     initial begin
-        a = 2'b11;
-        b = 2'b10;
-        c = 2'b01;
-        d = 2'b00;
-        test_image =   {a, b, b, c,
-                        d, d, c, a,
-                        c, b, d, d,
-                        c, d, d, d};
+        a = 4'b0111;
+        b = 4'b0010;
+        c = 4'b1111;
+        d = 4'b1000;
+        test_image =   {a, b, b, c, b, c,
+                        d, d, c, a, c, a,
+                        c, b, d, d, d, d,
+                        c, d, d, d, d, d,
+                        d, d, c, a, c, a,
+                        c, b, d, d, d, d};
         res_n = 0;
         clk = 1;
         #2
         res_n = 1;
         clk = 0;
 
-        $monitor("@ %0t:\tbuffer_r = %p\n\t\t\tbuffer_c = %p\n\t\t\tpooling_data = %p\n\t\t\tout = %b, out_valid = %b", $time, data_stream_r, data_stream_c, pooling, out_data, out_valid);
+        $monitor("@ %0t:\tbuffer_r = %p\n\t\t\tbuffer_c = %p\n\t\t\tpooling_data = %p\n\t\t\tout = %d, out_valid = %b", $time, data_stream_r, data_stream_c, pooling, out_data, out_valid);
         
         for (int counter = 1; counter <= ImageWidth*ImageWidth; counter = counter) begin
             #10
