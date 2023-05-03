@@ -39,74 +39,53 @@ module convolution_stage #(NumberOfK = 1, N = 3, BitSize=32, KernelBitSize = 4, 
       	
     );
   
-  	localparam StreamSize = 	(ImageWidth+2)*2+(N+1); // only works for N = 3
+  	localparam StreamSize = 	(ImageWidth+N-1)*(N-1)+(N+1); // only works for N = 3
   
   	logic [StreamSize-1:0][BitSize-1:0] data_stream_r;
+  	logic [StreamSize-1:0][BitSize-1:0] data_stream_c;
+	
   	integer 					image_pos_r;
   	integer						image_pos_c;
   
   	logic [N*N-1:0][BitSize-1:0] dot_product_in_c;
-    
-  	integer stream_index;
 
-  
-  	/* verilator lint_off LATCH */
+
+	genvar i;
+	genvar j;
+	generate;
+		for (i = 0; i < N; i = i + 1) begin
+			for (j = 0; j < N; j = j + 1) begin
+				assign dot_product_in_c[i][j] = data_stream_r[i * ImageWidth + j];
+			end
+		end
+	endgenerate
+
+
   	always_comb
-	/* verilator lint_on LATCH */
       begin
-		dot_product_in_c = 0;
 		out_ready = 0;
         out_valid = 0;
-		stream_index = 0;
     	image_pos_c = image_pos_r;
+		data_stream_c = data_stream_r;
         if(in_valid) begin
 			if (image_pos_c < ImageWidth+2) begin
-				data_stream_r[image_pos_c % StreamSize] = '0;
+				data_stream_c = {data_stream_r[StreamSize-2:0],'0};
 				out_ready = 0;
 			end
 			else if((image_pos_c%(ImageWidth+2) == 0) | (image_pos_c%(ImageWidth+2) == ImageWidth+1)) begin
-				data_stream_r[image_pos_c % StreamSize] = '0;
+				data_stream_c = {data_stream_r[StreamSize-2:0],'0};
 				out_ready = 0;
 			end
 			else begin
-        		data_stream_r[image_pos_c % StreamSize] = in_data;
+        		data_stream_c = {data_stream_r[StreamSize-2:0], in_data};
 				out_ready = 1;
 			end
 			
-        	if((image_pos_c >= StreamSize) & ((image_pos_c %(ImageWidth+2)) >1))
-        	    begin
-        	        int i;
-        	        int j;
-        	        for (i = 0; i < N; i= i + 1)
-        	        begin
-        	            for (j = 0; j < N; j= j + 1)
-        	            begin
-        	              stream_index = (image_pos_c - ((N-1-i)*ImageWidth -(N-1-j))) % StreamSize;
-        	              dot_product_in_c[i*N+j] = data_stream_r[stream_index];                
-        	            end
-        	        end
-        	      	out_valid = 1;
-        		end
         	image_pos_c = image_pos_c + 1;
         end
 		else if((image_pos_c < (ImageWidth+2)*(ImageWidth+2)) & (image_pos_c!=0)) begin
 			out_ready = 0;
-			data_stream_r[image_pos_c % StreamSize] = '0;
-
-			if((image_pos_c >= StreamSize) & ((image_pos_c %(ImageWidth+2)) >1))
-        	    begin
-        	        int i;
-        	        int j;
-        	        for (i = 0; i < N; i= i + 1)
-        	        begin
-        	            for (j = 0; j < N; j= j + 1)
-        	            begin
-        	              stream_index = (image_pos_c - ((N-1-i)*ImageWidth -(N-1-j))) % StreamSize;
-        	              dot_product_in_c[i*N+j] = data_stream_r[stream_index];                
-        	            end
-        	        end
-        	      	out_valid = 1;
-        		end
+			data_stream_c = {data_stream_r[StreamSize-2:0],'0};
         	image_pos_c = image_pos_c + 1;
 		end
     end
@@ -117,10 +96,12 @@ module convolution_stage #(NumberOfK = 1, N = 3, BitSize=32, KernelBitSize = 4, 
     	if(!res_n)
       	begin
         image_pos_r <= 0;
+		data_stream_r <= 0;
       	end
     	else
       	begin
         	image_pos_r <= image_pos_c;
+			data_stream_r <= data_stream_c;
         end
   	end
 endmodule
