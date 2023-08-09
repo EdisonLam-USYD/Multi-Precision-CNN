@@ -51,9 +51,10 @@ module convolution_buffer #(N = 3, BitSize=32, ImageWidth = 4)
   
   	logic [StreamSize-1:0][BitSize-1:0] data_stream_r;
   	logic [StreamSize-1:0][BitSize-1:0] data_stream_c;
-	logic [N-1:0][N-1:0][BitSize-1:0] out_window;			// combinational version of out_data
-	
-	assign out_data = out_window;
+	logic [N-1:0][N-1:0][BitSize-1:0] out_window_c;			// combinational version of out_data
+	logic [N-1:0][N-1:0][BitSize-1:0] out_window_r;	
+
+	assign out_data = out_window_c;
 	// assign out_done = done_counter >= StreamSize;
 	
   	integer 					image_pos_r;
@@ -77,7 +78,7 @@ module convolution_buffer #(N = 3, BitSize=32, ImageWidth = 4)
 		image_row_c 	= image_row_r;
 		data_stream_c 	= data_stream_r;
 
-		out_window = out_data;
+		out_window_c 	= out_window_r;
 		// done_c = 0;
 
 		if (in_valid || image_row_c >= ImageWidth)
@@ -98,21 +99,21 @@ module convolution_buffer #(N = 3, BitSize=32, ImageWidth = 4)
 					else if (image_row_c > PaddingCond_2 + PaddingCond_1) 
 					begin
 						out_valid = 0;
-						out_done = 1;
+						out_done  = 1;
 					end
 				end
 			
 				if (image_pos_c == PaddingCond_1) // line is reset, padding should be added to the left, everything shifted up
 				begin
-					out_window = s;
+					out_window_c = s;
 				end
 				else if (image_pos_c < PaddingCond_1) // padding on right is starting to be required
 				begin
-					out_window = next0;
+					out_window_c = next0;
 				end
 				else
 				begin
-					out_window = next;
+					out_window_c = next;
 				end
 			end
 			// else done_c = 1;
@@ -134,6 +135,7 @@ module convolution_buffer #(N = 3, BitSize=32, ImageWidth = 4)
 			image_row_r 	<= -1;				// should be 0 on first input
 			data_stream_r 	<= 0;
 			out_prev 		<= '0;
+			out_window_r	<= '0;
 			// done_counter_r <= 0;
       	end
     	else
@@ -142,6 +144,7 @@ module convolution_buffer #(N = 3, BitSize=32, ImageWidth = 4)
 			image_row_r 	<= image_row_c;
 			data_stream_r 	<= data_stream_c;
 			out_prev 		<= out_data;
+			out_window_r 	<= out_window_c;
 			// done_counter_r <= done_counter_c;
 			// done <= (in_done || done) && !done_c;
         end
