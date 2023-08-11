@@ -15,4 +15,8 @@ MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/simulate.log
 *.xdbg
 *.exe
 *.log
-*.log
+*.tcl
+MultiPrecision_CNN/MultiPrecision_CNN.xpr
+MultiPrecision_CNN/TB_nerveLayers_behav.wcfg
+MultiPrecision_CNN/MultiPrecision_CNN.cache/*
+MultiPrecision_CNN.sim/*
