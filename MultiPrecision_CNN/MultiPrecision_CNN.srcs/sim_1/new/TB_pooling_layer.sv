@@ -23,7 +23,7 @@
 module TB_pooling_layer;
 
     localparam BitSize = 4;
-    localparam N = 3;
+    localparam N = 2;
     localparam ImageWidth = 6;
 
     logic clk;
@@ -80,6 +80,12 @@ module TB_pooling_layer;
             end
           
         end
+        #10
+        clk = 1;
+        in_data = 0;
+        in_valid = 1;
+        #10
+        clk = 0;
     end
 
     // always @(*) begin

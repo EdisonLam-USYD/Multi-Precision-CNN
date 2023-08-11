@@ -22,7 +22,7 @@
 module TB_conv_buffer;
 
     localparam BitSize = 4;
-    localparam N = 3;
+    localparam N = 5;
     localparam ImageWidth = 4;
 
     logic clk;
