@@ -1,7 +1,7 @@
 // takes the in_data on the same cycle as the res_n (assuming in_valid is high)
 
 // flattening_pe #(.BitSize(), .ImageSize(), .Delay()) flat_pe 
-//    (.clk(), .res_n(), .in_valid(), .in_data(), .out_valid(), .out_data(), .out_done());
+//     (.clk(), .res_n(), .in_valid(), .in_data(), .out_valid(), .out_data(), .out_done());
 module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0) 
     (
         input clk,
@@ -53,7 +53,7 @@ module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0)
             assert in_data_c = in_data;
         else 
         begin
-            for (i = 0; i <= Delay; i = i - 1)
+            for (i = 0; i <= Delay; i = i + 1)
             begin : s_del
                 if (i < Delay)
                 begin
@@ -62,15 +62,24 @@ module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0)
 
                 if (i == 0)
                 begin
-                    assert s_del[i].buffer = (in_valid) ? in_data;
-                    
+                    always_ff @(posedge clk) 
+                    begin
+                        if (!res_n) s_del[i].buffer <= '0;
+                        else
+                        begin
+                            if (in_valid) s_del[i].buffer <= in_data;
+                        end
+                    end
                 end
                 else if (i < Delay)
                 begin
                     always_ff @(posedge clk) 
                     begin
                         if (!res_n) s_del[i].buffer <= '0;
-                        else        s_del[i].buffer <= s_del[i-1].buffer;
+                        else
+                        begin
+                            if (in_valid) s_del[i].buffer <= s_del[i-1].buffer;
+                        end
                     end
                 end
                 else 
