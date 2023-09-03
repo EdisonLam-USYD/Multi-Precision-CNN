@@ -37,13 +37,13 @@ generate
         assign in_fpe = (!done_check[T_INPUTS-1-i]) in_data[NumOfInputs-1-(i/NumOfPEPerInput)] : BitSize'(0);
 
         flattening_pe #(.BitSize(BitSize), .ImageSize(ImageSize), .Delay(i)) flat_pe 
-            (.clk(clk), .res_n(res_n), .in_valid(in_valid[T_INPUTS-1-i] || done_check[T_INPUTS-1-i]), .in_data(in_data[T_INPUTS-1-i]), .out_valid(), .out_data(out), .out_done());
+            (.clk(clk), .res_n(res_n), .in_valid(in_valid[T_INPUTS-1-i] || done_check[T_INPUTS-1-i]), .in_data(in_fpe), .out_valid(), .out_data(out), .out_done());
             // not sure if out_valid and out_done will be used
         
         wire [ImageSize-1:0][BitSize-1:0] tot_agent;
 
         if (i == 0) assign tot_agent = gen_PEs[i].out;
-        else assign tot_agent = gen_PEs[i].out || gen_PEs[i-1].tot_agent;
+        else assign tot_agent = gen_PEs[i].out | gen_PEs[i-1].tot_agent;
 
         if (i == NumOfImages - 1) assign out_data = gen_PEs[i].tot_agent;
     end
@@ -59,11 +59,15 @@ begin
     begin
         
 
-        if (counter_cycles_c == CyclesPerPixel - 1) counter_tot_c_c = counter_tot_c_c + 1;
+        if (counter_cycles_c == CyclesPerPixel - 1) begin
+            counter_tot_c_c = counter_tot_c_c + 1;
+            out_valid = 1;
+        end
         counter_cycles_c = (counter_cycles_c < CyclesPerPixel - 1) counter_cycles_c + 1 : 0;
         if (counter_tot_c_c >= ImageSize) begin
             // should be done
             // all pixels should have been given by this point  
+            out_ready = 0;
         end
         
     end
@@ -83,7 +87,7 @@ begin
         done_check = done_check || in_done;
         counter_tot_c_c = counter_tot_c_r;
         counter_cycles_c = counter_cycles_r;
-        debug_input_taken = ($signed(debug_input_taken) != -1) ? debug_input_taken || in_valid : T_INPUTS'(0); 
+        debug_input_taken = ($signed(debug_input_taken) != -1) ? debug_input_taken | in_valid : T_INPUTS'(0); 
     end
 end
 
