@@ -5,16 +5,18 @@
 //
 // Asumption made during the creation of this module is that the in_valid for each conv is already determined by an intermediary switch (if conv stage is connected to this)
 
+// flattening_layer #(.Bitsize(), .ImageSize(), .NumOfImages(), .NumOfPEPerInput(), .NumOfInputs(), .CyclesPerPixel())
+// f_layer0 (.clk(), .res_n(), .in_valid(), .in_data(), .in_done(), .out_ready(), .out_valid(), .out_data())
 module flattening_layer #(BitSize = 2, ImageSize = 9, NumOfImages = 4, NumOfPEPerInput = 1, NumOfInputs = 2, CyclesPerPixel = 4)
 (
     input clk,
     input res_n,
-    input [NumOfInputs*NumOfPEPerInput-1:0]                 in_valid,
-    input [NumOfInputs-1:0][BitSize-1:0]                    in_data,
-    input [NumOfInputs*NumOfPEPerInput-1:0]                 in_done,
+    input [NumOfImages-1:0]                 in_valid,
+    input [NumOfInputs*NumOfPEPerInput-1:0][BitSize-1:0]                    in_data,
+    input [NumOfImages-1:0]                 in_done,
 
     output logic                              out_ready,  // always ready?
-    output logic [ImageSize-1:0]              out_valid,
+    output logic                              out_valid,
     output logic [ImageSize-1:0][BitSize-1:0] out_data
 );
 
@@ -34,10 +36,10 @@ generate
 
         wire [BitSize-1:0] in_fpe;
 
-        assign in_fpe = (!done_check[T_INPUTS-1-i]) in_data[NumOfInputs-1-(i/NumOfPEPerInput)] : BitSize'(0);
+        assign in_fpe = (!done_check[T_INPUTS-1-i]) in_data[NumOfInputs-1-(i%NumOfImages)] : BitSize'(0);
 
         flattening_pe #(.BitSize(BitSize), .ImageSize(ImageSize), .Delay(i)) flat_pe 
-            (.clk(clk), .res_n(res_n), .in_valid(in_valid[T_INPUTS-1-i] || done_check[T_INPUTS-1-i]), .in_data(in_fpe), .out_valid(), .out_data(out), .out_done());
+            (.clk(clk), .res_n(res_n), .in_valid(in_valid[NumOfImages-1-i] || done_check[NumOfImages-1-i]), .in_data(in_fpe), .out_valid(), .out_data(out), .out_done());
             // not sure if out_valid and out_done will be used
         
         wire [ImageSize-1:0][BitSize-1:0] tot_agent;
