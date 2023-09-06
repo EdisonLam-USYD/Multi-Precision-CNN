@@ -38,7 +38,7 @@ generate
 
         wire [BitSize-1:0] in_fpe;
 
-        assign in_fpe = (!done_check_r[NumOfImages-1-i]) ? in_data[NumOfInputs-1-(i%T_INPUTS)] : BitSize'(0);
+        assign in_fpe = (!done_check_r[NumOfImages-1-i] && out_ready) ? in_data[NumOfInputs-1-(i%T_INPUTS)] : BitSize'(0);
 
         flattening_pe #(.BitSize(BitSize), .ImageSize(ImageSize), .Delay(i)) flat_pe 
             (.clk(clk), .res_n(res_n), .in_valid(in_valid[NumOfImages-1-i]), .in_data(in_fpe), .out_data(out), .out_done(done_check_c[NumOfImages-1-i]));
@@ -90,7 +90,7 @@ begin
     else
     begin
         out_ready = out_ready_c;
-        done_check_r = done_check_c;
+        done_check_r = done_check_c | done_check_r;
         counter_tot_c_r = counter_tot_c_c;
         counter_cycles_r = counter_cycles_c;
         // debug_input_taken = ($signed(debug_input_taken) != -1) ? debug_input_taken | in_valid : T_INPUTS'(0); 
