@@ -23,10 +23,10 @@ module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0)
 
     always_comb begin
         counter_c = counter_r;
-        out_data = '0;
         out_done = 0;
         if (in_valid)
         begin
+            out_data = '0;
             if (counter_c >= Delay) out_data[ImageSize-1-counter_c+Delay] =  in_data_c;
             // counter_c = (ImageSize - 1 != counter_r) ? counter_r + 1 : 0;
             counter_c = counter_r + 1;
@@ -48,7 +48,7 @@ module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0)
     genvar i;
     generate
         if (Delay == 0)
-            assign in_data_c = in_data;
+            assign in_data_c = (in_valid) ? in_data : in_data_c;
         else 
         begin
             for (i = 0; i <= Delay; i = i + 1)
