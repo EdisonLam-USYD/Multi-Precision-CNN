@@ -40,7 +40,7 @@ module TB_nerveLayers;
     logic                            out_ready;
     logic                            out_valid;
     logic                            out_done;
-    logic [NumOfNerves*BitSize-1:0]              out_data;
+    logic [NumOfNerves-1:0][BitSize-1:0]              out_data;
 
     systolic_array #(.BitSize(BitSize), .Weight_BitSize(Weight_BitSize), .M_W_BitSize(M_W_BitSize), .NumOfInputs(NumOfInputs), .NumOfNerves(NumOfNerves)) 
         layer1 (.clk(clk), .res_n(res_n), .in_valid(in_valid), .in_start(in_start), .in_data(in_data), .in_weights(in_weights), .in_partial_sum(in_partial_sum), 

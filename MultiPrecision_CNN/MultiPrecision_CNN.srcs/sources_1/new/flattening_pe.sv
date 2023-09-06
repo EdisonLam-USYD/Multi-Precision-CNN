@@ -50,7 +50,7 @@ module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0)
     genvar i;
     generate
         if (Delay == 0)
-            assert in_data_c = in_data;
+            assign in_data_c = in_data;
         else 
         begin
             for (i = 0; i <= Delay; i = i + 1)
@@ -84,7 +84,7 @@ module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0)
                 end
                 else 
                 begin
-                    assert in_data_c = s_del[i-1].buffer;
+                    assign in_data_c = s_del[i-1].buffer;
                 end
             end
         end

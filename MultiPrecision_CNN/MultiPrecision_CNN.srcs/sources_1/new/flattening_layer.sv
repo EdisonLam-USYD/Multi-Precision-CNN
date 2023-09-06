@@ -36,7 +36,7 @@ generate
 
         wire [BitSize-1:0] in_fpe;
 
-        assign in_fpe = (!done_check[T_INPUTS-1-i]) in_data[NumOfInputs-1-(i%NumOfImages)] : BitSize'(0);
+        assign in_fpe = (!done_check[T_INPUTS-1-i]) ? in_data[NumOfInputs-1-(i%NumOfImages)] : BitSize'(0);
 
         flattening_pe #(.BitSize(BitSize), .ImageSize(ImageSize), .Delay(i)) flat_pe 
             (.clk(clk), .res_n(res_n), .in_valid(in_valid[NumOfImages-1-i] || done_check[NumOfImages-1-i]), .in_data(in_fpe), .out_valid(), .out_data(out), .out_done());
@@ -65,7 +65,7 @@ begin
             counter_tot_c_c = counter_tot_c_c + 1;
             out_valid = 1;
         end
-        counter_cycles_c = (counter_cycles_c < CyclesPerPixel - 1) counter_cycles_c + 1 : 0;
+        counter_cycles_c = (counter_cycles_c < CyclesPerPixel - 1) ? counter_cycles_c + 1 : 0;
         if (counter_tot_c_c >= ImageSize) begin
             // should be done
             // all pixels should have been given by this point  
