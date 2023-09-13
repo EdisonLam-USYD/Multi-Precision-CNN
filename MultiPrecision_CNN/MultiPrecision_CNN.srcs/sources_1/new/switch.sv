@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module swicth #(NumberOfK = 1, CyclesPerPixel = 2)
+module switch #(NumberOfK = 1, CyclesPerPixel = 2)
 		(
     		input 							clk,
             input                           res_n,
@@ -40,10 +40,7 @@ module swicth #(NumberOfK = 1, CyclesPerPixel = 2)
         begin
             out_valid[count_c+ProcessingElements-1:count_c] = ~('0);
             count_c = (count_c + ProcessingElements) % NumberOfK;
-
         end
-
-
     end
 
     always_ff@(posedge clk) begin

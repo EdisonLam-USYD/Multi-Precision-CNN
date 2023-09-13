@@ -24,10 +24,6 @@
 // Some features to add after: - stride steps, increased number of data loaded in at once (parameterised)
 // convolution_stage #(.NumberOfK(), .N(), .BitSize(), .KernelBitSize(), .ImageWidth()) conv_s (.clk(), .res_n(), .in_valid(), .kernel(), .in_data(), .out_ready(), .out_valid(), .out_data());
 
-//implement buffer based on image width (ImageWidth/sqrt(CyclesPerPixel))
-//process each pixel over CPP cycles.
-//ourput is number of kernels  
-
 
 module convolution_stage #(NumberOfK = 1, N = 3, BitSize=32, KernelBitSize = 4, ImageWidth = 4, CyclesPerPixel = 2)
 		(
@@ -42,8 +38,8 @@ module convolution_stage #(NumberOfK = 1, N = 3, BitSize=32, KernelBitSize = 4, 
       	
     );
 
-	localparam BufferSize = ImageWidth;
-	localparam ProcessingElements = NumberOfK/CyclesPerPixel;
+	localparam BufferSize 			= ImageWidth;
+	localparam ProcessingElements 	= NumberOfK/CyclesPerPixel;
 
 
 	logic [BufferSize-1:0] [(N*N)*BitSize-1:0] buffer_c;
@@ -82,7 +78,7 @@ module convolution_stage #(NumberOfK = 1, N = 3, BitSize=32, KernelBitSize = 4, 
 		begin
 			buffer_c = buffer_c << (CyclesPerPixel*BitSize);
 			cycle_count_c 		= cycle_count_c - CyclesPerPixel;
-						
+
 		end
     end
 

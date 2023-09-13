@@ -68,8 +68,7 @@ module convolution_buffer #(N = 3, BitSize=32, ImageWidth = 4)
 	logic [N-1:0][N-1:0][BitSize-1:0]next0;
 	logic [N-1:0][N-1:0][BitSize-1:0]out_prev;
 
-  
-  	always_comb
+    	always_comb
 	begin
         out_valid 		= 0;
 		out_ready 		= 1;
