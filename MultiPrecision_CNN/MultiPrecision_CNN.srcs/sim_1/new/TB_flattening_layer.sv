@@ -28,7 +28,7 @@ module TB_flattening_layer;
     logic [ImageSize-1:0][BitSize-1:0] d;
     
     flattening_layer #(.BitSize(BitSize), .ImageSize(ImageSize), .NumOfImages(NumOfImages), 
-        .NumOfPEPerInput(NumOfPEPerInput), .NumOfInputs(NumOfInputs), .CyclesPerPixel(CyclesPerPixel))
+        .NumOfInputs(NumOfInputs), .CyclesPerPixel(CyclesPerPixel))
         f_layer0 (.clk(clk), .res_n(res_n), .in_valid(in_valid), .in_data(in_data), 
         .out_ready(out_ready), .out_valid(out_valid), .out_data(out_data));
 
