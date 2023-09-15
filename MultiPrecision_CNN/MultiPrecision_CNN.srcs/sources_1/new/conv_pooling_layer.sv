@@ -19,16 +19,16 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module conv_top #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSize = 4, CyclesPerPixel = 2)
+module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSize = 4, CyclesPerPixel = 2)
 		(
     		input 						clk,
             input                       res_n,
         	input 						in_valid,     // enable
             input [NumberOfK-1:0][KernelBitSize*(N*N)-1:0] kernel,   
-
             input [BitSize-1:0] 	    in_data,
 
-        	output                      out_valid
+        	output logic[NumberOfK-1:0]     out_valid
+            output logic [NumberOfK-1:0][BitSize-1:0] 	    out_data
       	
     );
 
@@ -43,7 +43,7 @@ module conv_top #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSiz
     logic                               pooling_valid;
     logic [BitSize-1:0]                 pooling_out;
 
-    convolution_buffer #(.N(N),  .BitSize(BitSize), .ImageWidth(ImageWidth))
+    convolution_buffer #(.N(N),  .BitSize(BitSize), .ImageWidth(ImageWidth)) conv_buffer
 	(
         .clk(clk),
         .res_n(res_n),
@@ -57,7 +57,7 @@ module conv_top #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSiz
     );
 
     convolution_stage #(.NumberOfK(NumberOfK), .N(N), .BitSize(BitSize), 
-        .KernelBitSize(KernelBitSize), .ImageWidth(ImageWidth), .CyclesPerPixel(CyclesPerPixel))
+        .KernelBitSize(KernelBitSize), .ImageWidth(ImageWidth), .CyclesPerPixel(CyclesPerPixel)) conv_stage
 	(
     	.clk(clk),
         .res_n(res_n),
@@ -69,7 +69,7 @@ module conv_top #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSiz
         .out_data(conv_out)	
     );
 
-    switch #(.NumberOfK(NumberOfK), .CyclesPerPixel(CyclesPerPixel))
+    switch #(.NumberOfK(NumberOfK), .CyclesPerPixel(CyclesPerPixel)) conv_switch
 	(
     	.clk(clk),
         .res_n(res_n),
@@ -79,7 +79,7 @@ module conv_top #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSiz
 
     genvar i;
     generate;
-        for (i = 0; i<($bits(switch_valid)-1); i=i+1) begin  
+        for (i = 0; i<($bits(switch_valid)-1); i=i+1) begin : pooling_layer 
             max_pooling_layer #(.N(N), .ImageWidth(ImageWidth), .BitSize(BitSize), .Stride())
             (
                 .clk(clk),
@@ -88,25 +88,9 @@ module conv_top #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSiz
                 .in_data(conv_out),
                 .out_ready(),
                 .out_valid(pooling_valid),
-                .out_data(pooling_out)
+                .out_data(out_data[i])
             );
         end
     endgenerate
-
-
-    always_comb begin
-
-
-    end
-
-    always_ff@(posedge clk) begin
-        if(!res_n) begin
-
-        end
-        else
-        begin
-
-        end
-    end
 
 endmodule
