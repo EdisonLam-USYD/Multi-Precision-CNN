@@ -21,6 +21,13 @@
 // For testing, will manually have to edit stored weights and values
 // details on array parameters: https://asic4u.wordpress.com/2016/01/23/passing-array-as-parameters/
 
+// dnn_top #(
+//     .BitSize(), .M_W_BitSize(), .NumIn(), .MaxNumNerves(), .NumOfImages(),
+//     .CyclesPerPixel(), .ImageSize(), .NumLayers(2), .LWB(`{4, 2}), .LNN(`{3, 3})
+// ) dnn_inst (
+//     .clk(), .res_n(), .in_valid(), .in_data(), .in_weights(), 
+//     .out_ready(), .out_data(), .out_valid(), .out_done()
+// )
 module dnn_top 
 #(
     BitSize = 8, M_W_BitSize = 16, NumIn = 4, NumLayers = 2, MaxNumNerves = 3, NumOfImages = 4,
