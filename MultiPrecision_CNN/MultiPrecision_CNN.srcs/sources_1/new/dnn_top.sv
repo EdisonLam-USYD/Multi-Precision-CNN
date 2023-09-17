@@ -52,8 +52,8 @@ module dnn_top
     // it takes N number of cycles to load in the weights of each nerve layer 
     // where N is the number of outputs of the previous layer
 
-    parameter integer LWB [NumLayers-1:0] = `{4, 2};        // LWB = Layer Weighted Bitsize
-    parameter integer LNN [NumLayers-1:0] = `{3, 3};        // LNN = Layer Number of Nerves (i.e number of inputs to the next layer)
+    parameter integer LWB [NumLayers-1:0] = '{4, 2};        // LWB = Layer Weighted Bitsize
+    parameter integer LNN [NumLayers-1:0] = '{3, 3};        // LNN = Layer Number of Nerves (i.e number of inputs to the next layer)
 
     logic fl_out_valid;
     logic [ImageSize-1:0][BitSize-1:0] fl_out_data;
@@ -88,7 +88,7 @@ module dnn_top
             end
             else begin
                 // systolic_array #(.BitSize(BitSize), .Weight_BitSize(LWB[NumLayers-1-i]), .M_W_BitSize(M_W_BitSize), .NumOfInputs(LNN[NumLayers-i]), .NumOfNerves(LNN[NumLayers-1-i])) 
-                systolic_array #(.BitSize(BitSize), .Weight_BitSize(LWB[NumLayers-1-i]), .M_W_BitSize(M_W_BitSize), .NumOfInputs(LLN[NumLayers-i]), .NumOfNerves(LNN[NumLayers-1-i])) 
+                systolic_array #(.BitSize(BitSize), .Weight_BitSize(LWB[NumLayers-1-i]), .M_W_BitSize(M_W_BitSize), .NumOfInputs(LNN[NumLayers-i]), .NumOfNerves(LNN[NumLayers-1-i])) 
                     layer1 (.clk(clk), .res_n(weight_en[NumLayers-1-i]), .in_valid(layer[i-1].nl_out_valid), .in_start(layer[i-1].nl_out_done), .in_data(layer[i-1].nl_out), .in_weights(in_weights[MaxNumNerves-1:-LNN[NumLayers-1-i]]), .in_partial_sum('0 /*in_partial_sum*/), 
                     .out_ready(nl_out_ready), .out_valid(nl_out_valid), .out_done(nl_out_done), .out_data(nl_out));
 
@@ -116,13 +116,13 @@ module dnn_top
         weight_counter_c = weight_counter_r;
 
         if (weight_counter_c == 0) begin
-            if (weight_timer_c > ImageSize) begin
+            if (weight_timer_c >= ImageSize) begin
                 weight_counter_c = weight_counter_c + 1;
                 weight_counter_c = 0;
             end
         end
         else if (weight_counter_c < NumLayers) begin
-            if (weight_timer_c > LNN[NumLayers - 1 - ]) begin
+            if (weight_timer_c >= LNN[NumLayers - 1 - weight_counter_c]) begin
                 weight_counter_c = weight_counter_c + 1;
                 weight_counter_c = 0;
             end
