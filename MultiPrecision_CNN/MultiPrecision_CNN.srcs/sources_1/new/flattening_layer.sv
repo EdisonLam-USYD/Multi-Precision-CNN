@@ -5,7 +5,7 @@
 //
 // Asumption made during the creation of this module is that the in_valid for each conv is already determined by an intermediary switch (if conv stage is connected to this)
 
-// flattening_layer #(.Bitsize(), .ImageSize(), .NumOfImages(), .NumOfInputs(), .CyclesPerPixel())
+// flattening_layer #(.BitSize(), .ImageSize(), .NumOfImages(), .NumOfInputs(), .CyclesPerPixel())
 // f_layer0 (.clk(), .res_n(), .in_valid(), .in_data(), .out_ready(), .out_valid(), .out_data())
 module flattening_layer #(BitSize = 2, ImageSize = 9, NumOfImages = 4, NumOfInputs = 2, CyclesPerPixel = 4)
 (
