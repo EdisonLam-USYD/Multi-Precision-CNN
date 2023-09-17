@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 // flattening layer, compatible inputs include: pooling layer(s), convolution stage (and switches)
 // Explaining the parameters:
 // Number of Images -> number of input images and therefore number of flattening PEs required - outputs (NOT NUMBER OF INPUTs necessarily)

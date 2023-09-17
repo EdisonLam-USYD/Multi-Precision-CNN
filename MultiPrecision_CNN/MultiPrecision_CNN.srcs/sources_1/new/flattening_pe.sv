@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 // takes the in_data on the same cycle as the res_n (assuming in_valid is high)
 
 // flattening_pe #(.BitSize(), .ImageSize(), .Delay()) flat_pe 
