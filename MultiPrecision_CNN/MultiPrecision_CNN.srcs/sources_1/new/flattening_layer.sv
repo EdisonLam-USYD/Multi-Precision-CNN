@@ -5,14 +5,14 @@
 //
 // Asumption made during the creation of this module is that the in_valid for each conv is already determined by an intermediary switch (if conv stage is connected to this)
 
-// flattening_layer #(.Bitsize(), .ImageSize(), .NumOfImages(), .NumOfPEPerInput(), .NumOfInputs(), .CyclesPerPixel())
+// flattening_layer #(.Bitsize(), .ImageSize(), .NumOfImages(), .NumOfInputs(), .CyclesPerPixel())
 // f_layer0 (.clk(), .res_n(), .in_valid(), .in_data(), .out_ready(), .out_valid(), .out_data())
-module flattening_layer #(BitSize = 2, ImageSize = 9, NumOfImages = 4, NumOfPEPerInput = 1, NumOfInputs = 2, CyclesPerPixel = 4)
+module flattening_layer #(BitSize = 2, ImageSize = 9, NumOfImages = 4, NumOfInputs = 2, CyclesPerPixel = 4)
 (
     input clk,
     input res_n,
     input [NumOfImages-1:0]                 in_valid,
-    input [NumOfInputs*NumOfPEPerInput-1:0][BitSize-1:0]                    in_data,
+    input [NumOfInputs-1:0][BitSize-1:0]                    in_data,
     // input [NumOfImages-1:0]                 done_check_c,
 
     output logic                              out_ready,  // always ready?
@@ -20,7 +20,7 @@ module flattening_layer #(BitSize = 2, ImageSize = 9, NumOfImages = 4, NumOfPEPe
     output logic [ImageSize-1:0][BitSize-1:0] out_data
 );
 
-localparam T_INPUTS = NumOfInputs*NumOfPEPerInput; // True Number of inputs [number of conv/pooling stages * Number of processsing elems per input]
+// localparam T_INPUTS = NumOfInputs; // True Number of inputs [number of conv/pooling stages * Number of processsing elems per input]
 
 logic [NumOfImages-1:0] done_check_r; // if all are done, then out_ready = 0
 logic [NumOfImages-1:0] done_check_c;
@@ -38,7 +38,7 @@ generate
 
         wire [BitSize-1:0] in_fpe;
 
-        assign in_fpe = (!done_check_r[NumOfImages-1-i] && out_ready) ? in_data[NumOfInputs-1-(i%T_INPUTS)] : BitSize'(0);
+        assign in_fpe = (!done_check_r[NumOfImages-1-i] && out_ready) ? in_data[NumOfInputs-1-(i%NumOfInputs)] : BitSize'(0);
 
         flattening_pe #(.BitSize(BitSize), .ImageSize(ImageSize), .Delay(i)) flat_pe 
             (.clk(clk), .res_n(res_n), .in_valid(in_valid[NumOfImages-1-i]), .in_data(in_fpe), .out_data(out), .out_done(done_check_c[NumOfImages-1-i]));
