@@ -90,7 +90,7 @@ begin
     end
     else
     begin
-        out_ready = out_ready_c;
+        out_ready = out_ready_c & out_ready;
         done_check_r = done_check_c | done_check_r;
         counter_tot_c_r = counter_tot_c_c;
         counter_cycles_r = counter_cycles_c;
