@@ -101,10 +101,10 @@ module dnn_top
                 assign temp_out_ready = nl_out_ready;
             end
             else begin
-                assign temp_out_ready = nl_out_ready | layer[i-1].temp_out_ready;
+                assign temp_out_ready = nl_out_ready & layer[i-1].temp_out_ready;
             end
         end
-        assign out_ready    = layer[NumLayers-1].temp_out_ready;
+        assign out_ready    = layer[NumLayers-1].temp_out_ready & fl_out_ready;
         assign out_valid    = layer[NumLayers-1].nl_out_valid;
         assign out_data     = layer[NumLayers-1].nl_out;
         assign out_done     = layer[NumLayers-1].nl_out_done;

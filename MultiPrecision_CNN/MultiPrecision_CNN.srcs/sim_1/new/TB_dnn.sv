@@ -24,7 +24,7 @@ module TB_dnn;
     localparam ImageSize        = 4; 
     localparam NumOfImages      = 2;
     // localparam NumOfPEPerInput  = 1;
-     localparam NumIn      = 1;
+     localparam NumIn      = 2;
     // localparam CyclesPerPixel   = 2;
     localparam MaxNumNerves = 3;
     localparam M_W_BitSize      = 4;
@@ -46,7 +46,7 @@ module TB_dnn;
     logic [2:0][BitSize-1:0] out_data;
 
     dnn_top #(
-        .BitSize(BitSize), .M_W_BitSize(M_W_BitSize), .NumIn(1), .MaxNumNerves(3), .NumOfImages(NumOfImages),
+        .BitSize(BitSize), .M_W_BitSize(M_W_BitSize), .NumIn(2), .MaxNumNerves(3), .NumOfImages(NumOfImages),
         .CyclesPerPixel(1), .ImageSize(ImageSize), .NumLayers(2), .LWB('{4, 2}), .LNN('{2, 3}) 
     ) dnn_inst (
         .clk(clk), .res_n(res_n), .in_valid(in_valid), .in_data(in_data), .in_weights(in_weight), 
@@ -67,6 +67,8 @@ module TB_dnn;
     logic [ImageSize-1:0][LNN[1]-1:0][M_W_BitSize-1:0] weights0;
     logic [LNN[1]-1:0][LNN[0]-1:0][M_W_BitSize-1:0] weights1;
 
+    logic [ImageSize-1:0][NumIn-1:0][BitSize-1:0] a_matrix;
+
     initial begin 
         // monitor to check the loading in of weights
        $monitor("@%0t: \n\tres_n = %b, in_weight = %p, weight_en = %p \n\tout_ready = %p", $time, res_n, in_weight, dnn_inst.weight_en, out_ready); 
@@ -84,12 +86,15 @@ module TB_dnn;
 
         weights1 = {{c, d, c},
                     {a, b, c}};
+        
+        a_matrix = {{a, b}, {c, d}, {b, c}, {a, a}};
 
+        // Setup:
         res_n = 0;
         in_valid = 0;
         clk = 0;
-        // starting the weight loading process on next posedge clock
 
+        // starting the weight loading process on next posedge clock
         for (int i = 0; i < ImageSize; i = i + 1) begin
             #10
             in_weight = {weights0[i], M_W_BitSize'(0)}; // in_weight = {weights0[ImageSize-1-i], M_W_BitSize'(0)};
@@ -106,6 +111,26 @@ module TB_dnn;
             #10
             clk = 0;
         end
+        // loading in weights  done
+
+        // inputting a_matrix:
+        for (int i = 0; i < ImageSize; i = i + 1) begin
+            #10
+            in_data = a_matrix[ImageSize-1-i];
+            in_valid = '1; // since CyclesPerPixel is 1
+            clk = 1;
+            #10
+            clk = 0;
+        end
+        for (int i = 0; i < NumOfImages-1; i = i + 1) begin // exact number of spare empty in_valids required
+            #10
+            in_data = '0;
+            in_valid = '1; // since CyclesPerPixel is 1
+            clk = 1;
+            #10
+            clk = 0;
+        end
+
 
         #10
         in_weight = '0;
