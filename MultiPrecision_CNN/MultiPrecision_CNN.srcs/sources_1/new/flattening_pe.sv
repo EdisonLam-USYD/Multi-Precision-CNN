@@ -20,6 +20,7 @@ module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0)
 
     // logic [ImageSize-1:0][BitSize-1:0] out_data_c;
     logic [BitSize-1:0] in_data_c;
+    logic done_latch;
     
 
     always_comb begin
@@ -31,7 +32,7 @@ module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0)
             if (counter_c >= Delay) out_data[ImageSize-1-counter_c+Delay] =  in_data_c;
             // counter_c = (ImageSize - 1 != counter_r) ? counter_r + 1 : 0;
             counter_c = counter_r + 1;
-            out_done = (counter_c >= ImageSize + Delay) ? 1 : 0;
+            out_done = ((counter_c >= ImageSize + Delay) && !done_latch) ? 1 : 0;
         end
     end
 
@@ -39,10 +40,12 @@ module flattening_pe #(BitSize = 2, ImageSize = 9, Delay = 0)
         if (!res_n)
         begin
             counter_r <= 0;
+            done_latch <= 0;
         end
         else
         begin
             counter_r <= counter_c;
+            done_latch <= (out_done) ? 1 : done_latch;
         end
     end
 
