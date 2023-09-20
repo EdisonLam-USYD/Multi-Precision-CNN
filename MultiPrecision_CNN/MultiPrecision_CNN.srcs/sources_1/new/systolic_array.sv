@@ -90,7 +90,7 @@ module systolic_array #(BitSize = 8, M_W_BitSize = 4, Weight_BitSize = 2, NumOfI
     assign in_w = in_weights;
     assign in_pa = in_partial_sum;
     assign out_start = done_check[NumOfInputs-1] && in_valid;
-    assign out_valid = (done_check[NumOfInputs+NumOfNerves-1:NumOfInputs-1] != 0) && in_valid;
+    assign out_valid = (done_check[NumOfInputs+NumOfNerves-2:NumOfInputs-1] != 0) && in_valid;
 
     always_ff @(posedge clk) begin
         if (!res_n) begin
