@@ -75,9 +75,9 @@ module TB_dnn;
         in_a = {BitSize'(4), BitSize'(4), BitSize'(4), BitSize'(4)};
         in_b = {BitSize'(3), BitSize'(3), BitSize'(3), BitSize'(3)};
 
-        a = 4'b0111;
+        a = 4'b0001;
         b = 4'b0010;
-        c = 4'b0001;
+        c = 4'b0011;
         d = 4'b0000;
         weights0 = {{c, d},
                     {a, c},
@@ -130,7 +130,15 @@ module TB_dnn;
             #10
             clk = 0;
         end
-
+        
+        for (int i = 0; i < 20; i = i + 1) begin // exact number of spare empty in_valids required
+            #10
+            in_data = '0;
+            in_valid = '1; // since CyclesPerPixel is 1
+            clk = 1;
+            #10
+            clk = 0;
+        end
 
         #10
         in_weight = '0;

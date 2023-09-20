@@ -59,9 +59,11 @@ module dnn_top
     logic fl_out_valid;
     logic [ImageSize-1:0][BitSize-1:0] fl_out_data;
     logic fl_out_ready;
+    logic fl_out_start;
 
     flattening_layer #(.BitSize(BitSize), .ImageSize(ImageSize), .NumOfImages(NumOfImages), .NumOfInputs(NumIn), .CyclesPerPixel(CyclesPerPixel))
-        f_layer0 (.clk(clk), .res_n(res_n), .in_valid(in_valid), .in_data(in_data), .out_ready(fl_out_ready), .out_valid(fl_out_valid), .out_data(fl_out_data));
+        f_layer0 (.clk(clk), .res_n(res_n), .in_valid(in_valid), .in_data(in_data), .out_ready(fl_out_ready), .out_valid(fl_out_valid), 
+        .out_data(fl_out_data), .out_start(fl_out_start));
 
 
     integer weight_timer_c;
@@ -76,22 +78,25 @@ module dnn_top
         for (i = 0; i < NumLayers; i = i + 1) begin : layer
             logic nl_out_ready;
             logic nl_out_valid;
-            logic nl_out_done;
+            logic nl_out_done;      // can be used to send / replace in_valid signals and TODO: make nl_out = 0 when done
+            logic nl_out_start;
             
             logic [LNN[NumLayers-1-i]-1:0][BitSize-1:0] nl_out;
             if (i == 0) begin
                 // out_ready can be used to signal which array has not been loaded yet
                 // implement in_start based on flattening layer?? - probably just hold the start for the known number of images
                 systolic_array #(.BitSize(BitSize), .Weight_BitSize(LWB[NumLayers-1-i]), .M_W_BitSize(M_W_BitSize), .NumOfInputs(ImageSize), .NumOfNerves(LNN[NumLayers-1-i])) 
-                    layer1 (.clk(clk), .res_n(res_n/*weight_en_posedge[NumLayers-1-i]*/), .in_valid(fl_out_valid), .in_start(!fl_out_ready), .in_data(fl_out_data), .in_weights(in_weights[MaxNumNerves-1:MaxNumNerves-LNN[NumLayers-1-i]]), .in_partial_sum('0 /*in_partial_sum*/), 
-                    .out_ready(nl_out_ready), .out_valid(nl_out_valid), .out_done(nl_out_done), .out_data(nl_out));
+                    layer1 (.clk(clk), .res_n(res_n/*weight_en_posedge[NumLayers-1-i]*/), .in_valid(fl_out_valid), .in_start(fl_out_start), .in_data(fl_out_data), 
+                    .in_weights(in_weights[MaxNumNerves-1:MaxNumNerves-LNN[NumLayers-1-i]]), .in_partial_sum('0 /*in_partial_sum*/), 
+                    .out_ready(nl_out_ready), .out_valid(nl_out_valid), .out_done(nl_out_done), .out_data(nl_out), .out_start(nl_out_start));
 
             end
             else begin
                 // systolic_array #(.BitSize(BitSize), .Weight_BitSize(LWB[NumLayers-1-i]), .M_W_BitSize(M_W_BitSize), .NumOfInputs(LNN[NumLayers-i]), .NumOfNerves(LNN[NumLayers-1-i])) 
                 systolic_array #(.BitSize(BitSize), .Weight_BitSize(LWB[NumLayers-1-i]), .M_W_BitSize(M_W_BitSize), .NumOfInputs(LNN[NumLayers-i]), .NumOfNerves(LNN[NumLayers-1-i])) 
-                    layer1 (.clk(clk), .res_n(weight_en_posedge[NumLayers-1-i]), .in_valid(layer[i-1].nl_out_valid), .in_start(layer[i-1].nl_out_done), .in_data(layer[i-1].nl_out), .in_weights(in_weights[MaxNumNerves-1:MaxNumNerves-LNN[NumLayers-1-i]]), .in_partial_sum('0 /*in_partial_sum*/), 
-                    .out_ready(nl_out_ready), .out_valid(nl_out_valid), .out_done(nl_out_done), .out_data(nl_out));
+                    layer1 (.clk(clk), .res_n(weight_en_posedge[NumLayers-1-i]), .in_valid(layer[i-1].nl_out_valid || layer[i-1].nl_out_done), .in_start(layer[i-1].nl_out_start), 
+                    .in_data(layer[i-1].nl_out), .in_weights(in_weights[MaxNumNerves-1:MaxNumNerves-LNN[NumLayers-1-i]]), .in_partial_sum('0 /*in_partial_sum*/), 
+                    .out_ready(nl_out_ready), .out_valid(nl_out_valid), .out_done(nl_out_done), .out_data(nl_out), .out_start(nl_out_start));
 
             end
 
