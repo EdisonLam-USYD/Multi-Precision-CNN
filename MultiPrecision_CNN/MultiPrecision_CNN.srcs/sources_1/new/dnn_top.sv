@@ -84,7 +84,6 @@ module dnn_top
             logic [LNN[NumLayers-1-i]-1:0][BitSize-1:0] nl_out;
             if (i == 0) begin
                 // out_ready can be used to signal which array has not been loaded yet
-                // implement in_start based on flattening layer?? - probably just hold the start for the known number of images
                 systolic_array #(.BitSize(BitSize), .Weight_BitSize(LWB[NumLayers-1-i]), .M_W_BitSize(M_W_BitSize), .NumOfInputs(ImageSize), .NumOfNerves(LNN[NumLayers-1-i])) 
                     layer1 (.clk(clk), .res_n(res_n/*weight_en_posedge[NumLayers-1-i]*/), .in_valid(fl_out_valid), .in_start(fl_out_start), .in_data(fl_out_data), 
                     .in_weights(in_weights[MaxNumNerves-1:MaxNumNerves-LNN[NumLayers-1-i]]), .in_partial_sum('0 /*in_partial_sum*/), 
@@ -92,7 +91,6 @@ module dnn_top
 
             end
             else begin
-                // systolic_array #(.BitSize(BitSize), .Weight_BitSize(LWB[NumLayers-1-i]), .M_W_BitSize(M_W_BitSize), .NumOfInputs(LNN[NumLayers-i]), .NumOfNerves(LNN[NumLayers-1-i])) 
                 systolic_array #(.BitSize(BitSize), .Weight_BitSize(LWB[NumLayers-1-i]), .M_W_BitSize(M_W_BitSize), .NumOfInputs(LNN[NumLayers-i]), .NumOfNerves(LNN[NumLayers-1-i])) 
                     layer1 (.clk(clk), .res_n(weight_en_posedge[NumLayers-1-i]), .in_valid(layer[i-1].nl_out_valid || layer[i-1].nl_out_done), .in_start(layer[i-1].nl_out_start), 
                     .in_data(layer[i-1].nl_out), .in_weights(in_weights[MaxNumNerves-1:MaxNumNerves-LNN[NumLayers-1-i]]), .in_partial_sum('0 /*in_partial_sum*/), 
@@ -115,7 +113,6 @@ module dnn_top
         assign out_done     = layer[NumLayers-1].nl_out_done;
     endgenerate
 
-    //TODO: weight enable logic
     // only logic within this module is the loading in of weights
     logic weight_counter_res;
     always_comb begin
