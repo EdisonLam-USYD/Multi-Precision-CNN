@@ -13,6 +13,13 @@ MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/simulate.log
 *.log
 *.wdb
 *.xdbg
+*.rlx
+*.rtti
+*.svtype
+*.ini
+*.txt
+*.type
+*.txt
 *.exe
 *.log
 *.tcl
@@ -20,7 +27,6 @@ MultiPrecision_CNN/MultiPrecision_CNN.xpr
 MultiPrecision_CNN/TB_nerveLayers_behav.wcfg
 MultiPrecision_CNN/MultiPrecision_CNN.cache/*
 MultiPrecision_CNN.sim/*
-MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/xelab.pb
 MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/xsim.dir/TB_conv_behav/Compile_Options.txt
 MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/xsim.dir/TB_conv_behav/TempBreakPointFile.txt
 MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/xsim.dir/TB_conv_behav/xsim.mem
@@ -77,4 +83,4 @@ MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/xsim.dir/TB_pooling_l
 MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/xsim.dir/TB_pooling_layer_behav/xsim.svtype
 MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/xsim.dir/TB_pooling_layer_behav/xsim.type
 MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/xsim.dir/TB_pooling_layer_behav/xsimSettings.ini
-MultiPrecision_CNN/MultiPrecision_CNN.sim/sim_1/behav/xsim/xelab.pb
+

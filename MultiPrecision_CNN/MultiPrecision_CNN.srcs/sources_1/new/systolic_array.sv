@@ -56,7 +56,7 @@ module takes m + n + p cycles to complete
 // Module reads weights on reset and reads on every posedge after that, loads in once NumOfInputs cycles have occurred (including reset cycle)
 // M_W_BitSize (i.e. Max Weight Bitsize) is there to save resources incase the memory isn't stored like the data
 // systolic_array #(.BitSize(BitSize), .M_W_BitSize(), .Weight_BitSize(Weight_BitSize), .NumOfInputs(NumOfInputs), .NumOfNerves(NumOfNerves)) 
-//         layer1 (.clk(), .res_n(), .in_start(), .in_valid(), .in_data(), .in_weights(), .in_partial_sum(), .out_ready(), .out_valid(), .out_done(), .out_data())
+//         layer1 (.clk(), .res_n(), .in_start(), .in_valid(), .in_data(), .in_weights(), .in_partial_sum(), .out_ready(), .out_valid(), .out_done(), .out_start(), .out_data())
 module systolic_array #(BitSize = 8, M_W_BitSize = 4, Weight_BitSize = 2, NumOfInputs = 2, NumOfNerves = 2)
     (
         input                                   clk,
@@ -69,6 +69,7 @@ module systolic_array #(BitSize = 8, M_W_BitSize = 4, Weight_BitSize = 2, NumOfI
 
         output logic                            out_ready,
         output logic                            out_valid,
+        output logic                            out_start,
         output logic                            out_done,
         output logic [NumOfNerves*BitSize-1:0]  out_data
     );
@@ -82,24 +83,27 @@ module systolic_array #(BitSize = 8, M_W_BitSize = 4, Weight_BitSize = 2, NumOfI
     logic [NumOfNerves-1:0][BitSize-1:0]        in_pa;
     logic [NumOfNerves-1:0][BitSize-1:0]        out_array;
     logic [NumOfNerves+NumOfInputs-1:0]         done_check;
+    logic done_latch;
 
     // assign t_in_data = in_data;  // this bugs it out for some reason, making the first column in_a == second column in_a
     assign out_data = out_array;
     assign in_w = in_weights;
     assign in_pa = in_partial_sum;
+    assign out_start = done_check[NumOfInputs-1] && in_valid;
+    assign out_valid = (done_check[NumOfInputs+NumOfNerves-2:NumOfInputs-1] != 0) && in_valid;
 
     always_ff @(posedge clk) begin
         if (!res_n) begin
             counter_w       <= 'b0;
             done_check[0]   <= 'b0;
+            done_latch      <= 'b0;
         end
         else begin
             if (counter_w < NumOfInputs + 1) begin
                 counter_w   <= counter_w + 1;
             end
             done_check[0]   <= in_start && in_valid;
-            out_done        <= done_check[NumOfInputs-1];
-            out_valid       <= done_check[NumOfInputs-1+:NumOfNerves] != 0;
+            done_latch      <= (!in_start) ? ((out_valid) ? 1 : done_latch) : 0;
         end
     end 
 
@@ -108,6 +112,7 @@ module systolic_array #(BitSize = 8, M_W_BitSize = 4, Weight_BitSize = 2, NumOfI
         t_in_data = in_data;
         en_l_b = (counter_w + 1 == NumOfInputs) ? 1'b1 : 1'b0;
         out_ready = (counter_w + 1 >= NumOfInputs) ? 1'b1 : 1'b0;        // out_ready is on when all weights are loaded in
+        out_done  = (done_latch && in_valid && !out_valid) ? 1 : 0;
         // out_data = out_array;
     end
 
@@ -142,6 +147,15 @@ module systolic_array #(BitSize = 8, M_W_BitSize = 4, Weight_BitSize = 2, NumOfI
             end
         end
     endgenerate
+
+    // generate
+    //     if (NumOfNerves < NumOfInputs) begin
+    //         assign out_valid = done_check[NumOfInputs-1] && in_valid;
+    //     end
+    //     else begin
+    //         assign out_valid = (done_check[NumOfInputs+NumOfNerves-1:NumOfInputs-1] != 0) && in_valid;
+    //     end
+    // endgenerate
 
     // assigning output
     generate;

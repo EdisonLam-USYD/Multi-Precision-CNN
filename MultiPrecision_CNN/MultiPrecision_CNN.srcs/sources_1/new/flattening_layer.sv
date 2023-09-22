@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 // flattening layer, compatible inputs include: pooling layer(s), convolution stage (and switches)
 // Explaining the parameters:
 // Number of Images -> number of input images and therefore number of flattening PEs required - outputs (NOT NUMBER OF INPUTs necessarily)
@@ -5,7 +6,7 @@
 //
 // Asumption made during the creation of this module is that the in_valid for each conv is already determined by an intermediary switch (if conv stage is connected to this)
 
-// flattening_layer #(.Bitsize(), .ImageSize(), .NumOfImages(), .NumOfInputs(), .CyclesPerPixel())
+// flattening_layer #(.BitSize(), .ImageSize(), .NumOfImages(), .NumOfInputs(), .CyclesPerPixel())
 // f_layer0 (.clk(), .res_n(), .in_valid(), .in_data(), .out_ready(), .out_valid(), .out_data())
 module flattening_layer #(BitSize = 2, ImageSize = 9, NumOfImages = 4, NumOfInputs = 2, CyclesPerPixel = 4)
 (
@@ -17,8 +18,11 @@ module flattening_layer #(BitSize = 2, ImageSize = 9, NumOfImages = 4, NumOfInpu
 
     output logic                              out_ready,  // always ready?
     output logic                              out_valid,
+    output logic                              out_start,
     output logic [ImageSize-1:0][BitSize-1:0] out_data
 );
+
+// localparam T_INPUTS = NumOfInputs; // True Number of inputs [number of conv/pooling stages * Number of processsing elems per input]
 
 logic [NumOfImages-1:0] done_check_r; // if all are done, then out_ready = 0
 logic [NumOfImages-1:0] done_check_c;
@@ -27,7 +31,8 @@ logic [$clog2(ImageSize):0] counter_tot_c_r;
 logic [$clog2(CyclesPerPixel):0] counter_cycles_c; // individual clock cycles for out_valid
 logic [$clog2(CyclesPerPixel):0] counter_cycles_r;
 logic out_ready_c;
-// logic [NumOfInputs-1:0] debug_input_taken;
+logic start_latch;
+// logic [T_INPUTS-1:0] debug_input_taken;
 
 genvar i;
 generate 
@@ -58,6 +63,7 @@ begin
     out_ready_c = 1;
     counter_tot_c_c = counter_tot_c_r;
     counter_cycles_c = counter_cycles_r;
+    out_start = 0;
     if (in_valid != 0)
     begin
         
@@ -65,9 +71,10 @@ begin
         if (counter_cycles_c == CyclesPerPixel - 1) begin
             counter_tot_c_c = counter_tot_c_c + 1;
             out_valid = 1;
+            out_start = (start_latch) ? 0 : 1;
         end
         counter_cycles_c = (counter_cycles_c < CyclesPerPixel - 1) ? counter_cycles_c + 1 : 0;
-        if (counter_tot_c_c >= ImageSize) begin
+        if (counter_tot_c_c >= ImageSize || start_latch) begin
             // should be done
             // all pixels should have been given by this point  
             out_ready_c = 0;
@@ -79,19 +86,22 @@ always_ff @(posedge clk)
 begin
     if (!res_n)
     begin
-        done_check_r = '0;
-        counter_tot_c_r = 0;
-        counter_cycles_r = 0;
-        out_ready = 1;
+        done_check_r        <= '0;
+        counter_tot_c_r     <= 0;
+        counter_cycles_r    <= 0;
+        out_ready           <= 1;
+        start_latch         <= 0;
         // debug_input_taken = 0;
     end
     else
     begin
-        out_ready = out_ready_c;
+        out_ready = out_ready_c & out_ready;
         done_check_r = done_check_c | done_check_r;
         counter_tot_c_r = counter_tot_c_c;
         counter_cycles_r = counter_cycles_c;
-        // debug_input_taken = ($signed(debug_input_taken) != -1) ? debug_input_taken | in_valid : NumOfInputs'(0); 
+        start_latch <= (counter_tot_c_c >= NumOfImages) ? 1 : start_latch;
+        // debug_input_taken = ($signed(debug_input_taken) != -1) ? debug_input_taken | in_valid : T_INPUTS'(0); 
+
     end
 end
 
