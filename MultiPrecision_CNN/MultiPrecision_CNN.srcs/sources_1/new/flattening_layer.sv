@@ -101,6 +101,7 @@ begin
         counter_cycles_r = counter_cycles_c;
         start_latch <= (counter_tot_c_c >= NumOfImages) ? 1 : start_latch;
         // debug_input_taken = ($signed(debug_input_taken) != -1) ? debug_input_taken | in_valid : T_INPUTS'(0); 
+
     end
 end
 
