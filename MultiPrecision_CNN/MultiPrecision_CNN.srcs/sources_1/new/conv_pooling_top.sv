@@ -22,8 +22,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, 
-        C2NumberOfK = 1, C3NumberofK = 2, C4NumberofK = 4,
+module conv_pooling_top #(N = 3, BitSize=32, ImageWidth = 4, 
+        C2NumberOfK = 1, C3NumberOfK = 2, C4NumberOfK = 4,
         C1KernelBitSize = 4, C2KernelBitSize = 4, C3KernelBitSize = 2, C4KernelBitSize = 1,
         C1CyclesPerPixel = 4, C2CyclesPerPixel = 4, C3CyclesPerPixel = 2, C4CyclesPerPixel = 1)
 		(
@@ -33,27 +33,27 @@ module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4,
             input [BitSize-1:0] 	                            in_data,
 
             input [C1NumberOfK-1:0][C1KernelBitSize*(N*N)-1:0]  C1kernel, 
-            input [C2NumberOfK-1:0][C2KernelBitSize*(N*N)-1:0]  C2kernel,
-            input [C3NumberOfK-1:0][C3KernelBitSize*(N*N)-1:0]  C3kernel,
+            input [C3NumberOfK-1:0][C2KernelBitSize*(N*N)-1:0]  C2kernel,
+            input [C2NumberOfK-1:0][C3KernelBitSize*(N*N)-1:0]  C3kernel,
             input [C4NumberOfK-1:0][C4KernelBitSize*(N*N)-1:0]  C4kernel,
             
-            output logic [C2NumberOfK-1:0]                      C2_out_valid;
-            output logic [C2NumberOfK-1:0][BitSize-1:0] 	    C2_out_data;
-            output logic [C3NumberOfK-1:0]                      C3_out_valid;
-            output logic [C3NumberOfK-1:0][BitSize-1:0] 	    C3_out_data;
-            output logic [C4NumberOfK-1:0]                      C4_out_valid;
-            output logic [C4NumberOfK-1:0][BitSize-1:0] 	    C4_out_data; 
+            output logic [C2NumberOfK-1:0]                      C2_out_valid,
+            output logic [C2NumberOfK-1:0][BitSize-1:0] 	    C2_out_data,
+            output logic [C3NumberOfK-1:0]                      C3_out_valid,
+            output logic [C3NumberOfK-1:0][BitSize-1:0] 	    C3_out_data,
+            output logic [C4NumberOfK-1:0]                      C4_out_valid,
+            output logic [C4NumberOfK-1:0][BitSize-1:0] 	    C4_out_data
       	
     );
 
-    localparam C1NumberofK = 3;
+    localparam C1NumberOfK = 3;
 
     logic [C1NumberOfK-1:0]                 C1_out_valid;
     logic [C1NumberOfK-1:0][BitSize-1:0] 	C1_out_data;
     
 
     //First convolution stage with 3 kernels
-    conv_pooling_layer #(.N (N), .BitSize(BitSize), .ImageWidth(ImageWidth), .NumberOfK(C1NumberofK), 
+    conv_pooling_layer #(.N (N), .BitSize(BitSize), .ImageWidth(ImageWidth), .NumberOfK(C1NumberOfK), 
         .KernelBitSize(C1KernelBitSize), .CyclesPerPixel(C1CyclesPerPixel)) C1
 		(
     		.clk(clk),
@@ -66,7 +66,7 @@ module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4,
     );
 
     //C2
-    conv_pooling_layer #(.N (N), .BitSize(BitSize), .ImageWidth(ImageWidth), .NumberOfK(C2NumberofK), 
+    conv_pooling_layer #(.N (N), .BitSize(BitSize), .ImageWidth(ImageWidth), .NumberOfK(C2NumberOfK), 
         .KernelBitSize(C2KernelBitSize), .CyclesPerPixel(C2CyclesPerPixel)) C2
 		(
     		.clk(clk),
@@ -79,7 +79,7 @@ module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4,
     );
 
     //C3
-    conv_pooling_layer #(.N (N), .BitSize(BitSize), .ImageWidth(ImageWidth), .NumberOfK(C3NumberofK), 
+    conv_pooling_layer #(.N (N), .BitSize(BitSize), .ImageWidth(ImageWidth), .NumberOfK(C3NumberOfK), 
         .KernelBitSize(C3KernelBitSize), .CyclesPerPixel(C3CyclesPerPixel)) C3
 		(
     		.clk(clk),
@@ -92,7 +92,7 @@ module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4,
     );
 
     //C4
-    conv_pooling_layer #(.N (N), .BitSize(BitSize), .ImageWidth(ImageWidth), .NumberOfK(C4NumberofK), 
+    conv_pooling_layer #(.N (N), .BitSize(BitSize), .ImageWidth(ImageWidth), .NumberOfK(C4NumberOfK), 
         .KernelBitSize(C4KernelBitSize), .CyclesPerPixel(C4CyclesPerPixel)) C4
 		(
     		.clk(clk),

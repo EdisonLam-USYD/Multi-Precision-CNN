@@ -19,20 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module TB_conv;
-
-    // logic [`K*(`N*`N)-1:0] in_kernel;
-    // logic [`B*(`N*`N)-1:0] in_conv;
-   
-    // logic [1:0] out;
-
-    // logic [`IW-1:0][`IW-1:0][`B-1:0] image;
-    // integer counter;
-    // logic clk;
-    // logic res_n;
-    // logic in_valid;
-    // logic out_ready;
-    // logic [2:0][`IW-1:0][`B-1:0] out_data;
+module TB_conv_pooling_layer;
 
     localparam BitSize = 4;
     localparam N = 3;
@@ -42,32 +29,36 @@ module TB_conv;
     localparam CyclesPerPixel = 2;
     localparam ProcessingElements = NoK/CyclesPerPixel;
 
-    logic clk;
-    logic res_n;
-    logic in_valid;
-    logic [BitSize-1:0] in_data;
-    logic out_ready;
-    logic out_valid;
-    logic buffer_out_valid;
-    logic [N-1:0][N-1:0][BitSize-1:0] buffer_out;
-    logic [ProcessingElements-1:0][BitSize-1:0] out_data;
-
-    logic [ImageWidth*ImageWidth-1:0][BitSize-1:0] test_image;
-    logic [BitSize-1:0] a;
-    logic [BitSize-1:0] b;
-    logic [BitSize-1:0] c;
-    logic [BitSize-1:0] d;
+    logic                                           clk;
+    logic                                           res_n;
+    logic                                           in_valid;
+    logic [BitSize-1:0]                             in_data;
+    logic                                           out_ready;
+    logic [NoK-1:0]                                 out_valid;
+    logic [ProcessingElements-1:0][BitSize-1:0]     out_data;
+    logic [ImageWidth*ImageWidth-1:0][BitSize-1:0]  test_image;
+    logic [BitSize-1:0]                             a;
+    logic [BitSize-1:0]                             b;
+    logic [BitSize-1:0]                             c;
+    logic [BitSize-1:0]                             d;
 
     logic [NoK-1:0][N-1:0][N-1:0][K-1:0] kernels;
 
 
-    convolution_buffer #(.N(N), .BitSize(BitSize), .ImageWidth(ImageWidth)) conv_b 
-        (.clk(clk), .res_n(res_n), .in_valid(in_valid), .in_data(in_data), .out_valid(buffer_out_valid), .out_data(buffer_out), .out_ready(out_ready), .out_done(out_done));
+    conv_pooling_layer #(.N(N), .BitSize(BitSize), .ImageWidth(ImageWidth),
+    .NumberOfK(NoK), .KernelBitSize(K), .CyclesPerPixel(CyclesPerPixel)) conv_pooling
+		(
+    		.clk(clk),
+            .res_n(res_n),
+        	.in_valid(in_valid),
+            .kernel(kernels),   
+            .in_data(in_data),
+            .out_ready(out_ready),
+        	.out_valid(out_valid),
+            .out_data(out_data)
+    );
 
-
-    convolution_stage #(.NumberOfK(NoK), .N(N), .BitSize(BitSize), .KernelBitSize(K), .ImageWidth(ImageWidth), .CyclesPerPixel(CyclesPerPixel)) conv_s 
-        (.clk(clk), .res_n(res_n), .in_valid(buffer_out_valid), .kernel(kernels), .in_data(buffer_out), .out_ready(), .out_valid(out_valid), .out_data(out_data));
-
+    
     initial
     begin
         // $monitor("@ %0t:\n\t\t%b %b\n %b", $time);
@@ -90,14 +81,20 @@ module TB_conv;
         kernels[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
 
 
-
-        for (int counter = 1; counter <= ImageWidth*ImageWidth; counter = counter) begin
+        for (int counter = 1; counter <= ImageWidth*ImageWidth*2; counter = counter) begin
             #10
             clk = 1;
-            in_data = test_image[ImageWidth*ImageWidth - counter];
-            in_valid = 1;
+            if(counter <= ImageWidth*ImageWidth) begin
+                in_data = test_image[ImageWidth*ImageWidth - counter];
+                in_valid = 1;
+            end
+            else begin
+                in_data = '0;
+                in_valid = '0;
+            end
             #10
             clk = 0;
+            counter = counter + 1;
             if (out_ready) begin
                 counter = counter + 1;
             end

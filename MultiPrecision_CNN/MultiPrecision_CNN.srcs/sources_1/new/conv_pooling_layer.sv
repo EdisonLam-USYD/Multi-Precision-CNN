@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSize = 4, CyclesPerPixel = 2)
+module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSize = 4, CyclesPerPixel = 1 )
 		(
     		input 						clk,
             input                       res_n,
@@ -27,10 +27,13 @@ module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, Ke
             input [NumberOfK-1:0][KernelBitSize*(N*N)-1:0] kernel,   
             input [BitSize-1:0] 	    in_data,
 
-        	output logic[NumberOfK-1:0]     out_valid
+        	output logic                out_ready,
+            output logic[NumberOfK-1:0]     out_valid,
             output logic [NumberOfK-1:0][BitSize-1:0] 	    out_data
       	
     );
+
+    localparam ProcessingElements = NumberOfK/CyclesPerPixel;
 
     logic [(N*N)*BitSize-1:0] 	        buffer_out;
     logic                               buffer_valid;
@@ -40,7 +43,6 @@ module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, Ke
 
     logic [NumberOfK-1:0]               switch_valid;
 
-    logic                               pooling_valid;
     logic [BitSize-1:0]                 pooling_out;
 
     convolution_buffer #(.N(N),  .BitSize(BitSize), .ImageWidth(ImageWidth)) conv_buffer
@@ -49,8 +51,7 @@ module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, Ke
         .res_n(res_n),
         .in_valid(in_valid),
         .in_data(in_data),
-        .in_done(),
-        .out_ready(),
+        .out_ready(out_ready),
         .out_valid(buffer_valid),
         .out_data(buffer_out),
         .out_done()
@@ -74,20 +75,20 @@ module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, Ke
     	.clk(clk),
         .res_n(res_n),
         .in_valid(conv_valid),  
-        .out_valid(switch_valid),      	
+        .out_valid(switch_valid)    	
     );
 
     genvar i;
     generate;
-        for (i = 0; i<($bits(switch_valid)-1); i=i+1) begin : pooling_layer 
-            max_pooling_layer #(.N(N), .ImageWidth(ImageWidth), .BitSize(BitSize), .Stride())
+        for (i = 0; i<NumberOfK; i=i+1) begin
+            max_pooling_layer #(.N(N), .ImageWidth(ImageWidth), .BitSize(BitSize), .Stride()) pooling_layer
             (
                 .clk(clk),
                 .res_n(res_n),
                 .in_valid(switch_valid[i]),
-                .in_data(conv_out),
+                .in_data(conv_out[i%ProcessingElements]),
                 .out_ready(),
-                .out_valid(pooling_valid),
+                .out_valid(out_valid[i]),
                 .out_data(out_data[i])
             );
         end
