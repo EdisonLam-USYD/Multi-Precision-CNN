@@ -68,11 +68,11 @@ module TB_pooling_layer;
 
         $monitor("@ %0t:\tbuffer_r = %p\n\t\t\tbuffer_c = %p\n\t\t\tpooling_data = %p\n\t\t\tout = %d, out_valid = %b", $time, data_stream_r, data_stream_c, pooling, out_data, out_valid);
         
-        for (int counter = 1; counter <= ImageWidth*ImageWidth; counter = counter) begin
+        for (int counter = 1; counter < ImageWidth*ImageWidth; counter = counter) begin
             #10
-            clk = 1;
             in_data = test_image[ImageWidth*ImageWidth - counter];
             in_valid = 1;
+            clk = 1;
             #10
             clk = 0;
             if (out_ready) begin
