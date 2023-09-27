@@ -24,7 +24,7 @@ module switch #(NumberOfK = 1, CyclesPerPixel = 2)
     		input 							clk,
             input                           res_n,
         	input 							in_valid,     // enable   
-        	output logic[NumberOfK-1:0]     out_valid,
+        	output logic[NumberOfK-1:0]     out_valid
       	
     );
 
@@ -34,11 +34,11 @@ module switch #(NumberOfK = 1, CyclesPerPixel = 2)
     integer count_r;
 
     always_comb begin
-        count_c     = count_r
+        count_c     = count_r;
         out_valid   = '0;
         if(in_valid)
         begin
-            out_valid[count_c+ProcessingElements-1:count_c] = ~('0);
+            out_valid[count_c+:ProcessingElements] = {ProcessingElements{1'b1}};
             count_c = (count_c + ProcessingElements) % NumberOfK;
         end
     end
@@ -46,7 +46,6 @@ module switch #(NumberOfK = 1, CyclesPerPixel = 2)
     always_ff@(posedge clk) begin
         if(!res_n) begin
             count_r     <= '0;
-            out_valid   <='0;
         end
         else
         begin

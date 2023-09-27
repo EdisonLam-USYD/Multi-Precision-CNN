@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSize = 4, CyclesPerPixel = 1 )
+module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSize = 4, CyclesPerPixel = 1, Stride = 2)
 		(
     		input 						clk,
             input                       res_n,
@@ -81,7 +81,7 @@ module conv_pooling_layer #(N = 3, BitSize=32, ImageWidth = 4, NumberOfK = 1, Ke
     genvar i;
     generate;
         for (i = 0; i<NumberOfK; i=i+1) begin
-            max_pooling_layer #(.N(N), .ImageWidth(ImageWidth), .BitSize(BitSize), .Stride()) pooling_layer
+            max_pooling_layer #(.N(N), .ImageWidth(ImageWidth), .BitSize(BitSize), .Stride(Stride)) pooling_layer
             (
                 .clk(clk),
                 .res_n(res_n),

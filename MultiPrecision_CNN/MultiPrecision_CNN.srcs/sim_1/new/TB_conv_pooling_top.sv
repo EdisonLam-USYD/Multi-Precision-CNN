@@ -59,6 +59,7 @@ module TB_conv_pooling_top;
             .res_n(res_n),
         	.in_valid(in_valid),
             .in_data(in_data),
+            .out_ready(out_ready),
             .C1kernel(C1kernel), 
             .C2kernel(C2kernel),
             .C3kernel(C3kernel),
@@ -110,7 +111,7 @@ module TB_conv_pooling_top;
         // C4kernel[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
         // C4kernel[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
 
-        for (int counter = 1; counter <= ImageWidth*ImageWidth*2; counter = counter) begin
+        for (int counter = 1; counter <= ImageWidth*ImageWidth; counter = counter) begin
             #10
             clk = 1;
             if(counter <= ImageWidth*ImageWidth) begin
@@ -123,7 +124,6 @@ module TB_conv_pooling_top;
             end
             #10
             clk = 0;
-            counter = counter + 1;
             if (out_ready) begin
                 counter = counter + 1;
             end

@@ -31,6 +31,8 @@ module conv_pooling_top #(N = 3, BitSize=32, ImageWidth = 4,
             input                                               res_n,
         	input 						                        in_valid,
             input [BitSize-1:0] 	                            in_data,
+            
+            output logic                                        out_ready,
 
             input [C1NumberOfK-1:0][C1KernelBitSize*(N*N)-1:0]  C1kernel, 
             input [C3NumberOfK-1:0][C2KernelBitSize*(N*N)-1:0]  C2kernel,
@@ -61,6 +63,7 @@ module conv_pooling_top #(N = 3, BitSize=32, ImageWidth = 4,
         	.in_valid(in_valid),
             .kernel(C1kernel),   
             .in_data(in_data),
+            .out_ready(out_ready),
         	.out_valid(C1_out_valid),
             .out_data(C1_out_data)
     );
@@ -74,6 +77,7 @@ module conv_pooling_top #(N = 3, BitSize=32, ImageWidth = 4,
         	.in_valid(C1_out_valid[0]),
             .kernel(C2kernel),   
             .in_data(C1_out_data),
+            .out_ready(),
         	.out_valid(C2_out_valid),
             .out_data(C2_out_data)
     );
@@ -87,6 +91,7 @@ module conv_pooling_top #(N = 3, BitSize=32, ImageWidth = 4,
         	.in_valid(C1_out_valid[1]),
             .kernel(C3kernel),   
             .in_data(C1_out_data),
+            .out_ready(),
         	.out_valid(C3_out_valid),
             .out_data(C3_out_data)
     );
@@ -100,6 +105,7 @@ module conv_pooling_top #(N = 3, BitSize=32, ImageWidth = 4,
         	.in_valid(C1_out_valid[1]),
             .kernel(C4kernel),   
             .in_data(C1_out_data),
+            .out_ready(),
         	.out_valid(C4_out_valid),
             .out_data(C4_out_data)
     );

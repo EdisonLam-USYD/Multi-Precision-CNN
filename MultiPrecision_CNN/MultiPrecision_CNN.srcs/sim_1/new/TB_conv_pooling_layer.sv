@@ -81,9 +81,8 @@ module TB_conv_pooling_layer;
         kernels[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
 
 
-        for (int counter = 1; counter <= ImageWidth*ImageWidth*2; counter = counter) begin
+        for (int counter = 1; counter <= ImageWidth*ImageWidth*3; counter = counter) begin
             #10
-            clk = 1;
             if(counter <= ImageWidth*ImageWidth) begin
                 in_data = test_image[ImageWidth*ImageWidth - counter];
                 in_valid = 1;
@@ -92,11 +91,11 @@ module TB_conv_pooling_layer;
                 in_data = '0;
                 in_valid = '0;
             end
+            clk = 1;
             #10
             clk = 0;
-            counter = counter + 1;
             if (out_ready) begin
-                counter = counter + 1;
+                  counter = counter + 1;
             end
           
         end
