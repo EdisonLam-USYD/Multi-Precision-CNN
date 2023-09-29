@@ -58,7 +58,7 @@ module convolution_stage #(NumberOfK = 2, N = 3, BitSize=32, KernelBitSize = 4, 
 	generate;
 		for (i = 0; (i < ProcessingElements); i = i + 1) begin
 			 dot_NxN #(.N(N), .BitSize(BitSize), .KernelBitSize(KernelBitSize)) 
-			 dot_product (.kernel(kernel[i+(cycle_count_c*ProcessingElements)]), .in_data(buffer_c[cycle_count_c]), .out_data(), .sum(out_data[i]));
+			 dot_product (.kernel(kernel[i+(cycle_count_c*ProcessingElements)]), .in_data(buffer_c[0]), .out_data(), .sum(out_data[i]));
 		end
 	endgenerate
 
@@ -72,15 +72,14 @@ module convolution_stage #(NumberOfK = 2, N = 3, BitSize=32, KernelBitSize = 4, 
 		if(in_valid)
 		begin
 			// read into the correct count on the register
-			buffer_c[buffer_count_r] 	= in_data;
-			// buffer_c[buffer_count_c] 	= in_data;
 			buffer_count_c				= buffer_count_c + 1;
+			buffer_c[buffer_count_c] 	= in_data;
 		end
 		// update cycle count and move through kernels, then shift out of buffer reduce buffer count
 		if((cycle_count_c >= CyclesPerPixel) && (buffer_count_c > 0))
 		begin
 			cycle_count_c 			= 0;
-			buffer_c = buffer_c 	>> BitSize;
+			buffer_c = buffer_c 	>> (N*N)*BitSize;
 			buffer_count_c 			= buffer_count_c - 1;
 		end
 
