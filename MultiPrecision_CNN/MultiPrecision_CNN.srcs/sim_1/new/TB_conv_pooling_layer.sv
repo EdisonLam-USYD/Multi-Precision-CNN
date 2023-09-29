@@ -22,12 +22,13 @@
 module TB_conv_pooling_layer;
 
     localparam BitSize = 4;
-    localparam N = 3;
+    localparam N = 2;
+    localparam Stride = 2;
     localparam ImageWidth = 4;
     localparam K = 2;
     localparam NoK = 4;
     localparam CyclesPerPixel = 2;
-    localparam ProcessingElements = NoK/CyclesPerPixel;
+    localparam ProcessingElements = (NoK+CyclesPerPixel-1)/CyclesPerPixel;
 
     logic                                           clk;
     logic                                           res_n;
@@ -46,7 +47,7 @@ module TB_conv_pooling_layer;
 
 
     conv_pooling_layer #(.N(N), .BitSize(BitSize), .ImageWidth(ImageWidth),
-    .NumberOfK(NoK), .KernelBitSize(K), .CyclesPerPixel(CyclesPerPixel)) conv_pooling
+    .NumberOfK(NoK), .KernelBitSize(K), .CyclesPerPixel(CyclesPerPixel), .Stride(Stride)) conv_pooling
 		(
     		.clk(clk),
             .res_n(res_n),

@@ -28,7 +28,7 @@ module switch #(NumberOfK = 1, CyclesPerPixel = 2)
       	
     );
 
-	localparam ProcessingElements 	= NumberOfK/CyclesPerPixel;
+	localparam ProcessingElements = (NumberOfK+CyclesPerPixel-1)/CyclesPerPixel;
 
     integer count_c;
     integer count_r;

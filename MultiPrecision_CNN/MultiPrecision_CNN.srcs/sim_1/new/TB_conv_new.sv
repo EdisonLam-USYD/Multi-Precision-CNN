@@ -40,7 +40,7 @@ module TB_conv;
     localparam K = 2;
     localparam NoK = 4;
     localparam CyclesPerPixel = 2;
-    localparam ProcessingElements = NoK/CyclesPerPixel;
+    localparam ProcessingElements = (NoK+CyclesPerPixel-1)/CyclesPerPixel;
 
     logic clk;
     logic res_n;
@@ -91,7 +91,7 @@ module TB_conv;
 
 
 
-        for (int counter = 1; counter <= ImageWidth*ImageWidth; counter = counter) begin
+        for (int counter = 1; counter <= ImageWidth*ImageWidth*2; counter = counter) begin
             #10
             clk = 1;
             in_data = test_image[ImageWidth*ImageWidth - counter];

@@ -25,7 +25,8 @@
 // convolution_stage #(.NumberOfK(), .N(), .BitSize(), .KernelBitSize(), .ImageWidth()) conv_s (.clk(), .res_n(), .in_valid(), .kernel(), .in_data(), .out_ready(), .out_valid(), .out_data());
 
 
-module convolution_stage #(NumberOfK = 2, N = 3, BitSize=32, KernelBitSize = 4, ImageWidth = 4, CyclesPerPixel = 1)
+module convolution_stage #(NumberOfK = 2, N = 3, BitSize=32, KernelBitSize = 4, ImageWidth = 4, CyclesPerPixel = 1, 
+							ProcessingElements = (NumberOfK+CyclesPerPixel-1)/CyclesPerPixel)
 		(
     		input 							clk,
             input                           res_n,
@@ -34,12 +35,12 @@ module convolution_stage #(NumberOfK = 2, N = 3, BitSize=32, KernelBitSize = 4, 
           	input [(N*N)*BitSize-1:0] 			in_data,      
       		output logic 						out_ready,
         	output logic 						out_valid,
-          	output logic [NumberOfK/CyclesPerPixel-1:0][BitSize-1:0] 			out_data // Have to update to number of prtocessing elements  
+          	output logic [ProcessingElements-1:0][BitSize-1:0] 			out_data // Have to update to number of prtocessing elements  
       	
     );
 
 	localparam BufferSize 			= ImageWidth**2;
-	localparam ProcessingElements 	= NumberOfK/CyclesPerPixel;
+	//localparam ProcessingElements 	= NumberOfK/CyclesPerPixel;
 
 
 	logic [BufferSize-1:0] [(N*N)*BitSize-1:0] buffer_c;
