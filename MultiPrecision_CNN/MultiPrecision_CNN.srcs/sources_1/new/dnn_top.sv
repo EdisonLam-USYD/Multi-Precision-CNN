@@ -31,8 +31,8 @@
 // )
 module dnn_top 
 #(
-    BitSize = 8, M_W_BitSize = 16, NumIn = 4, NumLayers = 2, MaxNumNerves = 3, NumOfImages = 4,
-    CyclesPerPixel = 4, ImageSize = 4, integer LWB [NumLayers-1:0] = '{4, 2}, integer LNN [NumLayers-1:0] = '{2, 3})
+    BitSize = 8, M_W_BitSize = 16, NumIn = 4, NumLayers = 4, MaxNumNerves = 6, NumOfImages = 4,
+    CyclesPerPixel = 4, ImageSize = 16, integer LWB [NumLayers-1:0] = '{4, 2, 4, 8}, integer LNN [NumLayers-1:0] = '{2, 3, 5, 6})
 (
     input clk,
     input res_n,
