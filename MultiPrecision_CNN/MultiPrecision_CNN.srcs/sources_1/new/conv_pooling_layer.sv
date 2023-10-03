@@ -20,12 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module conv_pooling_layer #(N = 2, BitSize=32, ImageWidth = 4, NumberOfK = 1, KernelBitSize = 4, CyclesPerPixel = 1, Stride = 2,
-                            ProcessingElements = (NumberOfK+CyclesPerPixel-1)/CyclesPerPixel)
+                            ProcessingElements = (NumberOfK+CyclesPerPixel-1)/CyclesPerPixel,
+                            [KernelBitSize*(N*N)-1:0] kernel [NumberOfK-1:0] = {'0})
 		(
     		input 						clk,
             input                       res_n,
         	input 						in_valid,     // enable
-            input [NumberOfK-1:0][KernelBitSize*(N*N)-1:0] kernel,   
+            // input [NumberOfK-1:0][KernelBitSize*(N*N)-1:0] kernel,   
             input [BitSize-1:0] 	    in_data,
 
         	output logic                out_ready,
@@ -33,6 +34,8 @@ module conv_pooling_layer #(N = 2, BitSize=32, ImageWidth = 4, NumberOfK = 1, Ke
             output logic [NumberOfK-1:0][BitSize-1:0] 	    out_data
       	
     );
+
+    //parameter [KernelBitSize*(N*N)-1:0] kernel [NumberOfK-1:0] = {'0,'0,'0,'0};
 
     //localparam ProcessingElements = NumberOfK/CyclesPerPixel;
 
@@ -59,12 +62,11 @@ module conv_pooling_layer #(N = 2, BitSize=32, ImageWidth = 4, NumberOfK = 1, Ke
     );
 
     convolution_stage #(.NumberOfK(NumberOfK), .N(N), .BitSize(BitSize), 
-        .KernelBitSize(KernelBitSize), .ImageWidth(ImageWidth), .CyclesPerPixel(CyclesPerPixel)) conv_stage
+        .KernelBitSize(KernelBitSize), .ImageWidth(ImageWidth), .CyclesPerPixel(CyclesPerPixel), .kernel(kernel)) conv_stage
 	(
     	.clk(clk),
         .res_n(res_n),
         .in_valid(buffer_valid),
-        .kernel(kernel),
         .in_data(buffer_out),      
       	.out_ready(),
         .out_valid(conv_valid),

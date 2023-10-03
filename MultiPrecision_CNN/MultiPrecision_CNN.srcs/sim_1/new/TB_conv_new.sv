@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module TB_conv;
+module TB_conv_new;
 
     // logic [`K*(`N*`N)-1:0] in_kernel;
     // logic [`B*(`N*`N)-1:0] in_conv;
@@ -58,15 +58,26 @@ module TB_conv;
     logic [BitSize-1:0] c;
     logic [BitSize-1:0] d;
 
-    logic [NoK-1:0][N-1:0][N-1:0][K-1:0] kernels;
+    localparam [K*(N*N)-1:0] kernels [NoK-1:0] =
+            {18'b000110110001101100,
+             18'b111111101010010101,
+             18'b110100100011001011,
+             18'b101010010101011000};
+
+    // localparam [NoK-1:0][N-1:0][N-1:0][K-1:0] kernels =
+    //     {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00},
+    //      {2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01},
+    //      {2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11},
+    //      {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
+
 
 
     convolution_buffer #(.N(N), .BitSize(BitSize), .ImageWidth(ImageWidth)) conv_b 
         (.clk(clk), .res_n(res_n), .in_valid(in_valid), .in_data(in_data), .out_valid(buffer_out_valid), .out_data(buffer_out), .out_ready(out_ready), .out_done(out_done));
 
 
-    convolution_stage #(.NumberOfK(NoK), .N(N), .BitSize(BitSize), .KernelBitSize(K), .ImageWidth(ImageWidth), .CyclesPerPixel(CyclesPerPixel)) conv_s 
-        (.clk(clk), .res_n(res_n), .in_valid(buffer_out_valid), .kernel(kernels), .in_data(buffer_out), .out_ready(), .out_valid(out_valid), .out_data(out_data));
+    convolution_stage #(.NumberOfK(NoK), .N(N), .BitSize(BitSize), .KernelBitSize(K), .ImageWidth(ImageWidth), .CyclesPerPixel(CyclesPerPixel), .kernel(kernels)) conv_s 
+        (.clk(clk), .res_n(res_n), .in_valid(buffer_out_valid), .in_data(buffer_out), .out_ready(), .out_valid(out_valid), .out_data(out_data));
 
     initial
     begin
@@ -84,10 +95,10 @@ module TB_conv;
         #2
         res_n = 1;
         clk = 0;
-        kernels[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
-        kernels[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
-        kernels[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
-        kernels[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
+        // kernels[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
+        // kernels[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
+        // kernels[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
+        // kernels[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
 
 
 

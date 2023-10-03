@@ -26,12 +26,13 @@
 
 
 module convolution_stage #(NumberOfK = 2, N = 3, BitSize=32, KernelBitSize = 4, ImageWidth = 4, CyclesPerPixel = 1, 
-							ProcessingElements = (NumberOfK+CyclesPerPixel-1)/CyclesPerPixel)
+							ProcessingElements = (NumberOfK+CyclesPerPixel-1)/CyclesPerPixel,
+							[KernelBitSize*(N*N)-1:0] kernel [NumberOfK-1:0] = {'0,'0,'0,'0})
 		(
     		input 							clk,
             input                           res_n,
         	input 							in_valid,     // enable
-          	input [NumberOfK-1:0][KernelBitSize*(N*N)-1:0] kernel,
+          	// input [NumberOfK-1:0][KernelBitSize*(N*N)-1:0] kernel,
           	input [(N*N)*BitSize-1:0] 			in_data,      
       		output logic 						out_ready,
         	output logic 						out_valid,
@@ -39,9 +40,12 @@ module convolution_stage #(NumberOfK = 2, N = 3, BitSize=32, KernelBitSize = 4, 
       	
     );
 
-	localparam BufferSize 			= ImageWidth**2;
-	//localparam ProcessingElements 	= NumberOfK/CyclesPerPixel;
 
+	// Note number of '0's in default value must equal default num K
+	//parameter [KernelBitSize*(N*N)-1:0] kernel [NumberOfK-1:0] = {'0,'0,'0,'0};
+
+
+	localparam BufferSize 			= ImageWidth**2;
 
 	logic [BufferSize-1:0] [(N*N)*BitSize-1:0] buffer_c;
 	logic [BufferSize-1:0] [(N*N)*BitSize-1:0] buffer_r;

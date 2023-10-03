@@ -30,6 +30,20 @@ module TB_conv_pooling_layer;
     localparam CyclesPerPixel = 2;
     localparam ProcessingElements = (NoK+CyclesPerPixel-1)/CyclesPerPixel;
 
+
+    localparam [K*(N*N)-1:0] kernels [NoK-1:0] =
+            {18'b000110110001101100,
+             18'b111111101010010101,
+             18'b110100100011001011,
+             18'b101010010101011000};
+
+    // localparam [NoK-1:0][N-1:0][N-1:0][K-1:0] kernels =
+    //     {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00},
+    //      {2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01},
+    //      {2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11},
+    //      {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
+
+
     logic                                           clk;
     logic                                           res_n;
     logic                                           in_valid;
@@ -43,16 +57,16 @@ module TB_conv_pooling_layer;
     logic [BitSize-1:0]                             c;
     logic [BitSize-1:0]                             d;
 
-    logic [NoK-1:0][N-1:0][N-1:0][K-1:0] kernels;
+    // logic [NoK-1:0][N-1:0][N-1:0][K-1:0] kernels;
 
 
     conv_pooling_layer #(.N(N), .BitSize(BitSize), .ImageWidth(ImageWidth),
-    .NumberOfK(NoK), .KernelBitSize(K), .CyclesPerPixel(CyclesPerPixel), .Stride(Stride)) conv_pooling
+    .NumberOfK(NoK), .KernelBitSize(K), .CyclesPerPixel(CyclesPerPixel), .Stride(Stride), .kernel(kernels)) conv_pooling
 		(
     		.clk(clk),
             .res_n(res_n),
         	.in_valid(in_valid),
-            .kernel(kernels),   
+            // .kernel(kernels),   
             .in_data(in_data),
             .out_ready(out_ready),
         	.out_valid(out_valid),
@@ -76,10 +90,10 @@ module TB_conv_pooling_layer;
         #2
         res_n = 1;
         clk = 0;
-        kernels[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
-        kernels[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
-        kernels[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
-        kernels[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
+        // kernels[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
+        // kernels[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
+        // kernels[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
+        // kernels[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
 
 
         for (int counter = 1; counter <= ImageWidth*ImageWidth*3; counter = counter) begin

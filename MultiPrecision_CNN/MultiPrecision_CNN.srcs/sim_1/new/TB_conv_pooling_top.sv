@@ -25,6 +25,37 @@ module TB_conv_pooling_top;
     localparam L2CyclesPerPixel = L1CyclesPerPixel*Stride*2;
 
 
+
+    localparam [C1KernelBitSize*(N*N)-1:0] C1kernel [C1NumberOfK-1:0]
+                        = {18'b000110110001101100,
+                           18'b111111101010010101,
+                           18'b110100100011001011};
+        
+    localparam [C2KernelBitSize*(N*N)-1:0] C2kernel [C2NumberOfK-1:0] 
+                        = {18'b000110110001101100,
+                           18'b111111101010010101,
+                           18'b110100100011001011,
+                           18'b101010010101011000}; 
+
+    localparam [C3KernelBitSize*(N*N)-1:0] C3kernel [C3NumberOfK-1:0]
+                        = {36'b001011000010101010010011101110001111,
+                           36'b110101000010011100011100000010110010,
+                           36'b010000010011001110110110001010001100,
+                           36'b100110111000111111101111100100100010,
+                           36'b101111010111101011010011101101001001,
+                           36'b001110110011000011110111110010010011,
+                           36'b111101101101111101100100111110101100,
+                           36'b110101111110110010011111001100101101};
+       
+    localparam [C4KernelBitSize*(N*N)-1:0] C4kernel [C4NumberOfK-1:0]
+                        = {72'b101000000010011001000010111111101100111010010100000010011000011000011100,
+                           72'b000000100101111101000010011010001001100100111010101000001011001011111101,
+                           72'b011101001111110110100111110111010001110001110110010100101010110001101100,
+                           72'b001111010110111100101010100001011100010010000010011001100101111100010001};
+
+
+
+
     logic                                           clk;
     logic                                           res_n;
     logic                                           in_valid;
@@ -44,27 +75,23 @@ module TB_conv_pooling_top;
     logic [BitSize-1:0]                             c;
     logic [BitSize-1:0]                             d;
 
-    logic [C1NumberOfK-1:0][N-1:0][N-1:0][C1KernelBitSize-1:0] C1kernel;
-    logic [C2NumberOfK-1:0][N-1:0][N-1:0][C2KernelBitSize-1:0] C2kernel;
-    logic [C3NumberOfK-1:0][N-1:0][N-1:0][C3KernelBitSize-1:0] C3kernel;    
-    logic [C4NumberOfK-1:0][N-1:0][N-1:0][C4KernelBitSize-1:0] C4kernel;
+    // logic [C1NumberOfK-1:0][N-1:0][N-1:0][C1KernelBitSize-1:0] C1kernel;
+    // logic [C2NumberOfK-1:0][N-1:0][N-1:0][C2KernelBitSize-1:0] C2kernel;
+    // logic [C3NumberOfK-1:0][N-1:0][N-1:0][C3KernelBitSize-1:0] C3kernel;    
+    // logic [C4NumberOfK-1:0][N-1:0][N-1:0][C4KernelBitSize-1:0] C4kernel;
 
 
 
     conv_pooling_top #(.N(N), .BitSize(BitSize), .ImageWidth(ImageWidth), .L1CyclesPerPixel(L1CyclesPerPixel), .Stride(Stride), 
         .C2NumberOfK(C2NumberOfK), .C3NumberOfK(C3NumberOfK), .C4NumberOfK(C4NumberOfK),
-        .C1KernelBitSize(C1KernelBitSize), .C2KernelBitSize(C2KernelBitSize), .C3KernelBitSize(C3KernelBitSize), .C4KernelBitSize(C4KernelBitSize)
-        ) conv_pooling_top
+        .C1KernelBitSize(C1KernelBitSize), .C2KernelBitSize(C2KernelBitSize), .C3KernelBitSize(C3KernelBitSize), .C4KernelBitSize(C4KernelBitSize),
+        .C1kernel(C1kernel), .C2kernel(C2kernel), .C3kernel(C3kernel), .C4kernel(C4kernel)) conv_pooling_top
 		(
     		.clk(clk),
             .res_n(res_n),
         	.in_valid(in_valid),
             .in_data(in_data),
             .out_ready(out_ready),
-            .C1kernel(C1kernel), 
-            .C2kernel(C2kernel),
-            .C3kernel(C3kernel),
-            .C4kernel(C4kernel),
             .C2_out_valid(C2_out_valid),
             .C2_out_data(C2_out_data),
             .C3_out_valid(C3_out_valid),
@@ -96,35 +123,30 @@ module TB_conv_pooling_top;
         #2
         res_n = 1;
         clk = 0;
-        C1kernel[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
-        C1kernel[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
-        C1kernel[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
-        // C1kernel[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
+        // C1kernel[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
+        // C1kernel[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
+        // C1kernel[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
         
-        C2kernel[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
-        C2kernel[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
-        C2kernel[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
-        C2kernel[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
+        // C2kernel[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
+        // C2kernel[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
+        // C2kernel[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
+        // C2kernel[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
 
-        C3kernel[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
-        C3kernel[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
-        C3kernel[2] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
-        C3kernel[3] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
-        C3kernel[4] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
-        C3kernel[5] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
-        C3kernel[6] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
-        C3kernel[7] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
+        // C3kernel[0] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
+        // C3kernel[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
+        // C3kernel[2] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
+        // C3kernel[3] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
+        // C3kernel[4] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
+        // C3kernel[5] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
+        // C3kernel[6] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
+        // C3kernel[7] = {{2'b00, 2'b01, 2'b10}, {2'b11, 2'b00, 2'b01}, {2'b10, 2'b11, 2'b00}};
        
-        // C3kernel[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
-        // C3kernel[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
 
-        C4kernel[0] = {{8'b00111011, 8'b01000010, 8'b10100011}, {8'b00101101, 8'b11000101, 8'b10011101}, {8'b01100101, 8'b11000100, 8'b00100011}};
-        C4kernel[1] = {{8'b00111011, 8'b01000010, 8'b10100011}, {8'b00101101, 8'b11000101, 8'b10011101}, {8'b01100101, 8'b11000100, 8'b00100011}};
-        C4kernel[2] = {{8'b00111011, 8'b01000010, 8'b10100011}, {8'b00101101, 8'b11000101, 8'b10011101}, {8'b01100101, 8'b11000100, 8'b00100011}};
-        C4kernel[3] = {{8'b00111011, 8'b01000010, 8'b10100011}, {8'b00101101, 8'b11000101, 8'b10011101}, {8'b01100101, 8'b11000100, 8'b00100011}};
-        //C4kernel[1] = {{2'b11, 2'b11, 2'b11}, {2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}};
-        // C4kernel[2] = {{2'b11, 2'b01, 2'b00}, {2'b10, 2'b00, 2'b11}, {2'b00, 2'b10, 2'b11}};
-        // C4kernel[3] = {{2'b10, 2'b10, 2'b10}, {2'b01, 2'b01, 2'b01}, {2'b01, 2'b10, 2'b00}};
+        // C4kernel[0] = {{8'b00111011, 8'b01000010, 8'b10100011}, {8'b00101101, 8'b11000101, 8'b10011101}, {8'b01100101, 8'b11000100, 8'b00100011}};
+        // C4kernel[1] = {{8'b00111011, 8'b01000010, 8'b10100011}, {8'b00101101, 8'b11000101, 8'b10011101}, {8'b01100101, 8'b11000100, 8'b00100011}};
+        // C4kernel[2] = {{8'b00111011, 8'b01000010, 8'b10100011}, {8'b00101101, 8'b11000101, 8'b10011101}, {8'b01100101, 8'b11000100, 8'b00100011}};
+        // C4kernel[3] = {{8'b00111011, 8'b01000010, 8'b10100011}, {8'b00101101, 8'b11000101, 8'b10011101}, {8'b01100101, 8'b11000100, 8'b00100011}};
+
 
         for (int counter = 1; counter <= ImageWidth*ImageWidth*4; counter = counter) begin
             #10
