@@ -81,11 +81,22 @@ module dot_NxN #(N = 3, BitSize=2, KernelBitSize = 4)
         
     endgenerate 
     /* verilator lint_off WIDTH */
-    always_comb begin
-        sum = 'b0;
-        for (int i = 0; i < BitSize*(N*N); i = i + 1) begin
-            sum = sum + out_data[i];
+
+    // logic [BitSize-1:0] p_out_data [N*N-1:0];
+    generate
+//        if (N == 3) begin
+//            assign sum = out_data[0] + out_data[1] + out_data[2] + out_data[3] + out_data[4] + out_data[5] + out_data[6] + out_data[7] + out_data[8];
+//        end
+//        else 
+        begin
+            always_comb begin
+                sum = 'b0;
+                for (int i = 0; i < BitSize*(N*N); i = i + 1) begin
+                    sum = sum + out_data[i];
+                end
+            end
         end
-    end
+        // sum = p_out_data.sum();
+    endgenerate
 
 endmodule
